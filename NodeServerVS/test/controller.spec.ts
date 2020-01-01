@@ -2,6 +2,7 @@
 import * as sinon from "sinon";
 import * as controller from "../controller";
 import { setInterval } from "timers";
+import { after } from "mocha";
 
 /*tslint:disable prefer-const*/
 var persist = should;
@@ -9,12 +10,17 @@ var persist = should;
 
 describe("Controller Tests", () => {
     let c: controller.Controller; 
+    var clock;
 
     beforeEach(() => {
         const opts = {
             gpio: sinon.createStubInstance(controller.Controller)
         };
         c = new controller.Controller(opts);
+        clock = sinon.useFakeTimers();
+    });
+    afterEach(() => {
+        clock.restore();
     });
     it("Verifies c exists", () => {
         c.should.be.instanceOf(controller.Controller);

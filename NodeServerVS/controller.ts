@@ -8,6 +8,8 @@ import { ResolveOptions } from "dns";
 import { equal } from "assert";
 import { setInterval } from "timers";
 import { EquipmentSchedule } from "./typings/EquipmentSchedule";
+import { _ } from "underscore";
+
 declare var _masterSwitchState: boolean;
 
 export class Controller {
@@ -52,7 +54,7 @@ export class Controller {
     }
 
     startTimer(interval: number): void {
-        this.timer = setInterval(this.timerHandler, interval);
+        this.timer = setInterval(_.bind(this.timerHandler, this), interval);
     }
 
 	timerHandler(): void {
