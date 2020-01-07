@@ -1,13 +1,13 @@
 ﻿import * as http from "http";
 import * as express from "express";
 import { Controller } from "./controller";
-import { Pool } from "./gpio";
+import { GPIO } from "./gpio";
 
 var app = express();
 
 module.exports = app;
 
-const _gpio = new Pool.GPIO();
+const _gpio = new GPIO();
 
 // This does all the work. Creates gpio objects using the onoff library
 //_gpio.init();
