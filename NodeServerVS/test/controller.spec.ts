@@ -1,6 +1,7 @@
 ﻿import { should, ok } from "should";
 import * as sinon from "sinon";
 import * as controller from "../controller";
+import { Pool } from "../gpio";
 import { setInterval } from "timers";
 import { after } from "mocha";
 
@@ -13,8 +14,45 @@ describe("Controller Tests", () => {
     var clock;
 
     beforeEach(() => {
+        let gpio = sinon.createStubInstance(Pool.GPIO); 
+        sinon.stub(gpio, "Pool").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "Spa").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "Booster").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "PoolLight").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "SpaLight").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "GroundLights").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "Heater").returns({
+            readSync: function () {
+                return;
+            }
+        });
+
         const opts = {
-            gpio: sinon.createStubInstance(controller.Controller)
+            gpio: gpio 
         };
         c = new controller.Controller(opts);
         clock = sinon.useFakeTimers();

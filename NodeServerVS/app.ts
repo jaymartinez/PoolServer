@@ -18,7 +18,7 @@ const options: any = {
 
 const controller = new Controller(options); 
 
-app.set('port', process.env.PORT || 8585);
+app.set('port', process.env.PORT || 9000);
 app.get("/ping", controller.ping);
 app.get("/login", controller.login);
 app.get('/poolPump', controller.togglePoolPump);
