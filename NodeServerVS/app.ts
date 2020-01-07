@@ -1,13 +1,13 @@
 ﻿import * as http from "http";
 import * as express from "express";
 import { Controller } from "./controller";
-import { Pool } from "./gpio";
+import { GPIO } from "./gpio";
 
 var app = express();
 
 module.exports = app;
 
-const _gpio = new Pool.GPIO();
+const _gpio = new GPIO();
 
 // This does all the work. Creates gpio objects using the onoff library
 //_gpio.init();
@@ -18,7 +18,7 @@ const options: any = {
 
 const controller = new Controller(options); 
 
-app.set('port', process.env.PORT || 8585);
+app.set('port', process.env.PORT || 9000);
 app.get("/ping", controller.ping);
 app.get("/login", controller.login);
 app.get('/poolPump', controller.togglePoolPump);

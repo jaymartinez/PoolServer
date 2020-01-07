@@ -1,18 +1,18 @@
 ﻿import {should, ok} from "should";
 import * as sinon from "sinon";
 import { Gpio } from "onoff";
-import { Pool } from "../gpio";
+import { GPIO } from "../gpio";
 
 var persist = should;
 
 describe("Gpio tests", () => {
     let fakeOnoff: sinon.SinonStubbedInstance<Gpio>;
-    let _gpio: Pool.GPIO;
+    let _gpio: GPIO;
     const fakeMethod: any = () => { return; };
 
     beforeEach(() => {
         //fakeOnoff = sinon.createStubInstance(Gpio);
-        _gpio = new Pool.GPIO();
+        _gpio = new GPIO();
 
         sinon.stub(_gpio, "createGpio").callsFake((pin, direction) => {
             let fakeGpioObject: any = {};
@@ -26,7 +26,7 @@ describe("Gpio tests", () => {
     });
 
     it("Tests gpio exists", () => {
-        _gpio.should.be.instanceOf(Pool.GPIO);
+        _gpio.should.be.instanceOf(GPIO);
     });
 
     it("Tests constructor sets pins", () => {

@@ -6,8 +6,6 @@ import * as onoff from "onoff";
 
 declare var _masterSwitchState: boolean;
 
-export module Pool {
-
     export class GPIO {
         private poolPumpPin: number;
         private spaPumpPin: number;
@@ -184,7 +182,6 @@ export module Pool {
             return result;
         }
     }
-}
 
 export module TimeConstants {
     export var ThreeHoursInMilliseconds: number = 10800000;

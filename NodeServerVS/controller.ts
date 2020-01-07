@@ -1,7 +1,7 @@
 //var _ = require("underscore");
 //var onoffGpio = require("onoff").Gpio || { Gpio: function () { return; } };
 //var gpio = require("./gpio");
-import { Pool } from "./gpio";
+import { GPIO } from "./gpio";
 import { Request, json } from "express";
 import { Response } from "express";
 import { ResolveOptions } from "dns";
@@ -14,7 +14,7 @@ declare var _masterSwitchState: boolean;
 
 export class Controller {
     private options: any;
-    private gpio: Pool.GPIO;
+    private gpio: GPIO;
     private timer: NodeJS.Timeout;
     private poolSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
@@ -25,6 +25,7 @@ export class Controller {
             typeof options.gpio == "undefined") {
 			throw "options is undefined";
 		}
+        console.log(typeof options.gpio);
 
         this.gpio = options.gpio;
 
