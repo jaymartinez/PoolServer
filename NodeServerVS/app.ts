@@ -2,6 +2,7 @@
 import * as express from "express";
 import { Controller } from "./controller";
 import { GPIO } from "./gpio";
+import { _ } from "underscore";
 
 var app = express();
 
@@ -28,7 +29,7 @@ app.get('/heater', controller.toggleHeater);
 app.get('/setSchedule', controller.setSchedule);
 app.get('/getSchedule', controller.getSchedule);
 //this._app.get('/controller/analog', controller.analogPinCount);
-app.get('/status', controller.pinStatus);
+app.get('/status', _.bind(controller.pinStatus, controller));
 app.get('/allStatuses', controller.allStatuses);
 app.get('/toggleMasterSwitch', controller.toggleMasterSwitch);
 
