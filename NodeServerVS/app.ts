@@ -9,9 +9,6 @@ module.exports = app;
 
 const _gpio = new GPIO();
 
-// This does all the work. Creates gpio objects using the onoff library
-//_gpio.init();
-
 const options: any = {
     gpio: _gpio
 };
@@ -32,6 +29,7 @@ app.get('/setSchedule', controller.setSchedule);
 app.get('/getSchedule', controller.getSchedule);
 //this._app.get('/controller/analog', controller.analogPinCount);
 app.get('/status', controller.pinStatus);
+app.get('/allStatuses', controller.allStatuses);
 app.get('/toggleMasterSwitch', controller.toggleMasterSwitch);
 
 http.createServer(app).listen(app.get('port'), function () {

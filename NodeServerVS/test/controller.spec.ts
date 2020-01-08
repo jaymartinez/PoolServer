@@ -1,7 +1,7 @@
 ﻿import { should, ok } from "should";
 import * as sinon from "sinon";
 import * as controller from "../controller";
-import { Pool } from "../gpio";
+import { GPIO } from "../gpio";
 import { setInterval } from "timers";
 import { after } from "mocha";
 
@@ -14,7 +14,7 @@ describe("Controller Tests", () => {
     var clock;
 
     beforeEach(() => {
-        let gpio = sinon.createStubInstance(Pool.GPIO); 
+        let gpio = sinon.createStubInstance(GPIO); 
         sinon.stub(gpio, "Pool").returns({
             readSync: function () {
                 return;

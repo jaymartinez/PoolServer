@@ -28,6 +28,7 @@ export class Controller {
         console.log(typeof options.gpio);
 
         this.gpio = options.gpio;
+        this.gpio.init();
 
         this.poolSchedule = {
             startHour: 8,
@@ -183,24 +184,22 @@ export class Controller {
             this.boosterSchedule.endHour = boosterEndHour;
             this.boosterSchedule.endMinute = boosterEndMinute;
 
-            result = { messages: ["SUCCESS"] };
+            result = { Messages: ["SUCCESS"] };
         } catch (err) {
             msg = err.message || err.getMessage();
-            result = { messages: ["FAIL: " + msg] };
+            result = { Messages: ["FAIL: " + msg] };
         }
 
         res.send(JSON.stringify(result));
     }
     pinStatus(req: Request, res: Response) {
 		console.log("ENTERED pinStatus");
-		var equipment = this.gpio.getEquipmentName(req.query.pinNumber), pinState = this.gpio.pinStatus(req.query.pinNumber), result = {
+		var pinState = this.gpio.pinStatus(req.query.pinNumber), result = {
 			data: {
 				PinObject: {
 					PinNumber: req.query.pinNumber,
-					State: pinState,
-					StateDescription: pinState === 1 ? "ON" : "OFF"
-				},
-				Equipment: equipment,
+					State: pinState
+				}
 			}
 		};
 		try {
@@ -209,7 +208,16 @@ export class Controller {
 		}
 		catch (ex) {
 			console.log(ex.message || "There was an error sending the response from method [pinStatus()]");
+            res.send(JSON.stringify({ Messages: [ex.message] }));
 		}
 	}
+    allStatuses(req: Request, res: Response) {
+        console.log("ENTERED allStatuses");
+        var result = {
+            Messages: ["allStatuses Response"]
+        };
+
+        res.send(JSON.stringify(result));
+    }
 }
 
