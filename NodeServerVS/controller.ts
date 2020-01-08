@@ -28,7 +28,6 @@ export class Controller {
         console.log(typeof options.gpio);
 
         this.gpio = options.gpio;
-        this.gpio.init();
 
         this.poolSchedule = {
             startHour: 8,

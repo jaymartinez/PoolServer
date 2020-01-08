@@ -31,6 +31,8 @@ export class GPIO {
         this.poolLightPin = 19;
         this.spaLightPin = 20;
         this.groundLightsPin = 21;
+
+        this.init();
     }
 
     get PoolPumpPin(): number {
