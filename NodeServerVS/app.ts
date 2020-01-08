@@ -17,21 +17,20 @@ const options: any = {
 const controller = new Controller(options); 
 
 app.set('port', process.env.PORT || 9000);
-app.get("/ping", controller.ping);
-app.get("/login", controller.login);
-app.get('/poolPump', controller.togglePoolPump);
-app.get('/boosterPump', controller.toggleBoosterPump);
-app.get('/spaPump', controller.toggleSpaPump);
-app.get('/spaLight', controller.toggleSpaLight);
-app.get('/poolLight', controller.togglePoolLight);
-app.get('/groundLights', controller.toggleGroundLights);
-app.get('/heater', controller.toggleHeater);
-app.get('/setSchedule', controller.setSchedule);
-app.get('/getSchedule', controller.getSchedule);
-//this._app.get('/controller/analog', controller.analogPinCount);
+app.get('/ping', _.bind(controller.ping, controller));
+app.get('/login', _.bind(controller.login, controller));
+app.get('/poolPump', _.bind(controller.togglePoolPump, controller));
+app.get('/boosterPump', _.bind(controller.toggleBoosterPump, controller));
+app.get('/spaPump', _.bind(controller.toggleSpaPump, controller));
+app.get('/spaLight', _.bind(controller.toggleSpaLight, controller));
+app.get('/poolLight', _.bind(controller.togglePoolLight, controller));
+app.get('/groundLights', _.bind(controller.toggleGroundLights, controller));
+app.get('/heater', _.bind(controller.toggleHeater, controller));
+app.get('/setSchedule', _.bind(controller.setSchedule, controller));
+app.get('/getSchedule', _.bind(controller.getSchedule, controller));
 app.get('/status', _.bind(controller.pinStatus, controller));
-app.get('/allStatuses', controller.allStatuses);
-app.get('/toggleMasterSwitch', controller.toggleMasterSwitch);
+app.get('/allStatuses', _.bind(controller.allStatuses, controller));
+app.get('/toggleMasterSwitch', _.bind(controller.toggleMasterSwitch, controller));
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
