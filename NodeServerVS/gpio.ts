@@ -89,6 +89,7 @@ export class GPIO {
     }
 
     createGpio(pin: number, direction: onoff.Direction): onoff.Gpio {
+        console.log("ENTERED createGpio");
         return new onoff.Gpio(pin, direction);
     }
 

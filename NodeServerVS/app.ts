@@ -3,6 +3,8 @@ import * as express from "express";
 import { Controller } from "./controller";
 import { GPIO } from "./gpio";
 import { _ } from "underscore";
+import * as https from "https";
+import * as fs from "fs";
 
 var app = express();
 
@@ -36,9 +38,17 @@ http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-
-//var _masterSwitchState = MasterSwitchState.OFF;
 /*
+https.createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
+}, app).listen(app.get('port'), function () {
+    console.log('Express server listening on port ' + app.get('port'));
+});
+*/
+
+/*
+var _masterSwitchState = MasterSwitchState.OFF;
 export module MasterSwitchState {
     export var ON = 1;
     export var OFF = 0;

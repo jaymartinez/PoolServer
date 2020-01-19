@@ -25,7 +25,6 @@ export class Controller {
             typeof options.gpio == "undefined") {
 			throw "options is undefined";
 		}
-        console.log(typeof options.gpio);
 
         this.gpio = options.gpio;
 
@@ -96,7 +95,7 @@ export class Controller {
 	}
 	getSchedule(req: Request, res: Response) {
 		var result = {
-			data: {
+			Data: {
 				StartHour: this.poolSchedule.startHour,
 				StartMinute: this.poolSchedule.startMinute,
 				EndHour: this.poolSchedule.endHour,
@@ -106,7 +105,8 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
 	ping(req: Request, res: Response) {
-		var result = { messages: ["OK"] };
+        console.log("Entered ping()");
+		var result = { Messages: ["OK"] };
 		res.send(JSON.stringify(result));
 	}
 	login(req, res) {
