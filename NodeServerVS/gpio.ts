@@ -146,19 +146,20 @@ export class GPIO {
         return equipment;
     }
 
-    toggle(gpio: any) {
+    toggle(gpio: any, pin: number) {
         let initialPinState = gpio.readSync(),
-            finalStateString,
+            finalStateString = "",
             finalState,
             result,
-            pinObject: any = {},
-            equipment = this.getEquipmentName(gpio.pinNumber);
+            pinObject = {};
 
         if (initialPinState === 1) {
             //Set pin low
+            //console.log("setting pin low");
             gpio.writeSync(0);
         } else {
             //Set pin high
+            //console.log("setting pin high");
             gpio.writeSync(1);
         }
 
@@ -166,13 +167,12 @@ export class GPIO {
         finalState = gpio.readSync();
         finalStateString = finalState === 1 ? "On" : "Off";
 
-        pinObject.StateDescription = finalStateString;
-        pinObject.State = finalState;
-        pinObject.PinNumber = gpio.pinNumber;
+        pinObject["State"] = finalState;
+        pinObject["PinNumber"] = pin;
 
         result = {
             Data: {
-                PinPin: pinObject
+                PiPin: pinObject
             }
         };
         console.log("Request received: PIN state is " + finalStateString);
