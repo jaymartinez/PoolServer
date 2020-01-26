@@ -1,7 +1,6 @@
-//var _ = require("underscore");
 //var onoffGpio = require("onoff").Gpio || { Gpio: function () { return; } };
 //var gpio = require("./gpio");
-import { Pool } from "./gpio";
+import { GPIO } from "./gpio";
 import { Request, json } from "express";
 import { Response } from "express";
 import { ResolveOptions } from "dns";
@@ -14,7 +13,7 @@ declare var _masterSwitchState: boolean;
 
 export class Controller {
     private options: any;
-    private gpio: Pool.GPIO;
+    private gpio: GPIO;
     private timer: NodeJS.Timeout;
     private poolSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
@@ -95,7 +94,7 @@ export class Controller {
 	}
 	getSchedule(req: Request, res: Response) {
 		var result = {
-			data: {
+			Data: {
 				StartHour: this.poolSchedule.startHour,
 				StartMinute: this.poolSchedule.startMinute,
 				EndHour: this.poolSchedule.endHour,
@@ -105,7 +104,8 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
 	ping(req: Request, res: Response) {
-		var result = { messages: ["OK"] };
+        console.log("Entered ping()");
+		var result = { Messages: ["OK"] };
 		res.send(JSON.stringify(result));
 	}
 	login(req, res) {
@@ -120,25 +120,25 @@ export class Controller {
 		res.send(200, JSON.stringify(response));
 	}
 	togglePoolPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Pool)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Pool, this.gpio.PoolPumpPin)));
 	}
 	toggleBoosterPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Booster)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Booster, this.gpio.BoosterPumpPin)));
     }
     toggleSpaPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Spa)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Spa, this.gpio.SpaPumpPin)));
     }
     togglePoolLight(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.PoolLight)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.PoolLight, this.gpio.PoolLightPin)));
     }
     toggleSpaLight(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.SpaLight)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.SpaLight, this.gpio.SpaLightPin)));
 	}
 	toggleGroundLights(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.GroundLights)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.GroundLights, this.gpio.GroundLightsPin)));
     }
     toggleHeater(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater, this.gpio.HeaterPin)));
     }
     setSchedule(req: Request, res: Response): void {
 		//var result = this.gpio.setSchedule(req.query.startDate, req.query.endDate);
@@ -182,24 +182,28 @@ export class Controller {
             this.boosterSchedule.endHour = boosterEndHour;
             this.boosterSchedule.endMinute = boosterEndMinute;
 
-            result = { messages: ["SUCCESS"] };
+            result = { 
+                Data: {
+                    StartHour:this.poolSchedule.startHour,
+                    StartMinute:this.poolSchedule.startMinute,
+                    EndHour:this.poolSchedule.endHour,
+                    EndMinute:this.poolSchedule.endMinute
+                } 
+            };
+
         } catch (err) {
             msg = err.message || err.getMessage();
-            result = { messages: ["FAIL: " + msg] };
+            result = { Messages: ["FAIL: " + msg] };
         }
 
         res.send(JSON.stringify(result));
     }
     pinStatus(req: Request, res: Response) {
-		console.log("ENTERED pinStatus");
-		var equipment = this.gpio.getEquipmentName(req.query.pinNumber), pinState = this.gpio.pinStatus(req.query.pinNumber), result = {
-			data: {
-				PinObject: {
-					PinNumber: req.query.pinNumber,
-					State: pinState,
-					StateDescription: pinState === 1 ? "ON" : "OFF"
-				},
-				Equipment: equipment,
+		console.log("ENTERED pinStatus: pin = " + req.query.pinNumber);
+		var pinState = this.gpio.pinStatus(req.query.pinNumber), result = {
+			Data: {
+				PinNumber: req.query.pinNumber,
+				State: pinState
 			}
 		};
 		try {
@@ -208,7 +212,16 @@ export class Controller {
 		}
 		catch (ex) {
 			console.log(ex.message || "There was an error sending the response from method [pinStatus()]");
+            res.send(JSON.stringify({ Messages: [ex.message] }));
 		}
 	}
+    allStatuses(req: Request, res: Response) {
+        console.log("ENTERED allStatuses");
+        var result = {
+            Messages: ["allStatuses Response"]
+        };
+
+        res.send(JSON.stringify(result));
+    }
 }
 

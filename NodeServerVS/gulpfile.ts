@@ -9,7 +9,7 @@ var config = {
     host: '192.168.0.17',
     port: 22,
     username: 'pi',
-    privateKey: fs.readFileSync('c:/dev/NodeServerVS/NodeServerVS/id_rsa')
+    privateKey: fs.readFileSync("e:/Jay's Stuff/dev/PoolServerTS/NodeServerVS/id_rsa")
 };
 
 var gulpSSH = new GulpSSH({
@@ -20,5 +20,5 @@ var gulpSSH = new GulpSSH({
 gulp.task('transfer', function () {
     return gulp
         .src(['./**/*.js', '!**/node_modules/**', "!./**/*Copy*", "!./**/*gulp*"])
-        .pipe(gulpSSH.dest('/home/pi/Documents/projects/pi3/pool-controller/'));
+        .pipe(gulpSSH.dest('/home/pi/projects/staging/PoolServer/NodeServerVS/'));
 });
