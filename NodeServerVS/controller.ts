@@ -1,4 +1,3 @@
-//var _ = require("underscore");
 //var onoffGpio = require("onoff").Gpio || { Gpio: function () { return; } };
 //var gpio = require("./gpio");
 import { GPIO } from "./gpio";
@@ -200,13 +199,11 @@ export class Controller {
         res.send(JSON.stringify(result));
     }
     pinStatus(req: Request, res: Response) {
-		console.log("ENTERED pinStatus: pin=" + req.query.pinNumber);
+		console.log("ENTERED pinStatus: pin = " + req.query.pinNumber);
 		var pinState = this.gpio.pinStatus(req.query.pinNumber), result = {
 			Data: {
-				PiPin: {
-					PinNumber: req.query.pinNumber,
-					State: pinState
-				}
+				PinNumber: req.query.pinNumber,
+				State: pinState
 			}
 		};
 		try {

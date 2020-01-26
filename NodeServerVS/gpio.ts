@@ -146,7 +146,7 @@ export class GPIO {
         return equipment;
     }
 
-    toggle(gpio: any, pin: number) {
+    toggle(gpio: any, pin: any) {
         let initialPinState = gpio.readSync(),
             finalStateString = "",
             finalState,
@@ -172,10 +172,11 @@ export class GPIO {
 
         result = {
             Data: {
-                PiPin: pinObject
+                State: finalState,
+                PinNumber: pin
             }
         };
-        console.log("Request received: PIN state is " + finalStateString);
+        console.log("Request received: PIN is now " + finalStateString);
 
         return result;
     }
