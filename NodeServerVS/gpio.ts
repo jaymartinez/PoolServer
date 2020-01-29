@@ -150,25 +150,18 @@ export class GPIO {
         let initialPinState = gpio.readSync(),
             finalStateString = "",
             finalState,
-            result,
-            pinObject = {};
+            result;
 
         if (initialPinState === 1) {
             //Set pin low
-            //console.log("setting pin low");
             gpio.writeSync(0);
         } else {
             //Set pin high
-            //console.log("setting pin high");
             gpio.writeSync(1);
         }
 
-        //var state = digitalRead == digital.HIGH ? "HIGH" : "LOW";
         finalState = gpio.readSync();
         finalStateString = finalState === 1 ? "On" : "Off";
-
-        pinObject["State"] = finalState;
-        pinObject["PinNumber"] = pin;
 
         result = {
             Data: {
@@ -176,7 +169,7 @@ export class GPIO {
                 PinNumber: pin
             }
         };
-        console.log("Request received: PIN is now " + finalStateString);
+        console.log("Request received: PIN " + pin + " is now " + finalStateString);
 
         return result;
     }
