@@ -33,6 +33,7 @@ app.get('/getSchedule', _.bind(controller.getSchedule, controller));
 app.get('/status', _.bind(controller.pinStatus, controller));
 app.get('/allStatuses', _.bind(controller.allStatuses, controller));
 app.get('/toggleMasterSwitch', _.bind(controller.toggleMasterSwitch, controller));
+app.get('/masterSwitchStatus', _.bind(controller.masterSwitchStatus, controller));
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));

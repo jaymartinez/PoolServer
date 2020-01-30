@@ -9,14 +9,13 @@ import { setInterval } from "timers";
 import { EquipmentSchedule } from "./typings/EquipmentSchedule";
 import { _ } from "underscore";
 
-declare var _masterSwitchState: boolean;
-
 export class Controller {
     private options: any;
     private gpio: GPIO;
     private timer: NodeJS.Timeout;
     private poolSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
+    private masterSwitchState: number;
 
 	constructor(options: any) {
         if (options === undefined ||
@@ -24,6 +23,7 @@ export class Controller {
             typeof options.gpio == "undefined") {
 			throw "options is undefined";
 		}
+        this.masterSwitchState = 0;
 
         this.gpio = options.gpio;
 
@@ -60,37 +60,50 @@ export class Controller {
         const today: Date = new Date(),
             hour: number = today.getHours(),
             minute: number = today.getMinutes();
-
-		if (this.poolSchedule.startHour === hour && this.poolSchedule.startMinute === minute) {
-			if (this.gpio.Pool.readSync() === 0) {
-				this.gpio.setPin(this.gpio.Pool, 1);
-				console.log("Pool pump active at " + (new Date(Date.now())).toLocaleString());
-			}
-		}
-		else if (this.poolSchedule.endHour === hour && this.poolSchedule.endMinute === minute) {
-			if (this.gpio.Pool.readSync() === 1) {
-				this.gpio.setPin(this.gpio.Pool, 0);
-				console.log("Pool pump deactivated at " + (new Date(Date.now())).toLocaleString());
-			}
-		}
-		if (this.boosterSchedule.startHour === hour && this.boosterSchedule.startMinute === minute) {
-			if (this.gpio.Booster.readSync() === 0) {
-				this.gpio.setPin(this.gpio.Booster, 1);
-				console.log("Booster pump activated at " + (new Date(Date.now())).toLocaleString());
-			}
-		}
-		else if (this.boosterSchedule.endHour === hour && this.boosterSchedule.endMinute === minute) {
-			if (this.gpio.Booster.readSync() === 1) {
-				this.gpio.setPin(this.gpio.Booster, 0);
-				console.log("Booster pump deactivated at " + (new Date(Date.now())).toLocaleString());
-			}
-		}
+        
+        if (this.masterSwitchState === 1) {
+		    if (this.poolSchedule.startHour === hour && this.poolSchedule.startMinute === minute) {
+			    if (this.gpio.Pool.readSync() === 0) {
+				    this.gpio.setPin(this.gpio.Pool, 1);
+				    console.log("Pool pump active at " + (new Date(Date.now())).toLocaleString());
+			    }
+		    }
+		    else if (this.poolSchedule.endHour === hour && this.poolSchedule.endMinute === minute) {
+			    if (this.gpio.Pool.readSync() === 1) {
+				    this.gpio.setPin(this.gpio.Pool, 0);
+				    console.log("Pool pump deactivated at " + (new Date(Date.now())).toLocaleString());
+			    }
+		    }
+		    if (this.boosterSchedule.startHour === hour && this.boosterSchedule.startMinute === minute) {
+			    if (this.gpio.Booster.readSync() === 0) {
+				    this.gpio.setPin(this.gpio.Booster, 1);
+				    console.log("Booster pump activated at " + (new Date(Date.now())).toLocaleString());
+			    }
+		    }
+		    else if (this.boosterSchedule.endHour === hour && this.boosterSchedule.endMinute === minute) {
+			    if (this.gpio.Booster.readSync() === 1) {
+				    this.gpio.setPin(this.gpio.Booster, 0);
+				    console.log("Booster pump deactivated at " + (new Date(Date.now())).toLocaleString());
+			    }
+		    }
+        }
 	}
-	toggleMasterSwitch(req: Request, res: Response) {
-		_masterSwitchState = !_masterSwitchState;
-		var result = {
-			data: {}
+    masterSwitchStatus(req: Request, res: Response) {
+		let result = {
+			Data: this.masterSwitchState
 		};
+		res.send(JSON.stringify(result));
+    }
+	toggleMasterSwitch(req: Request, res: Response) {
+        if (this.masterSwitchState === 0) {
+            this.masterSwitchState = 1;
+        } else if (this.masterSwitchState === 1) {
+            this.masterSwitchState = 0;
+        }
+		let result = {
+			Data: this.masterSwitchState
+		};
+		res.send(JSON.stringify(result));
 	}
 	getSchedule(req: Request, res: Response) {
 		var result = {
