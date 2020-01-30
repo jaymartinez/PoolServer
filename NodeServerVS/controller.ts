@@ -108,7 +108,8 @@ export class Controller {
 				StartHour: this.poolSchedule.startHour,
 				StartMinute: this.poolSchedule.startMinute,
 				EndHour: this.poolSchedule.endHour,
-				EndMinute: this.poolSchedule.endMinute
+				EndMinute: this.poolSchedule.endMinute,
+                IsActive: this.scheduleEnabled
 			}
 		};
 		res.send(JSON.stringify(result));
