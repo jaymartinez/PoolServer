@@ -15,7 +15,7 @@ export class Controller {
     private timer: NodeJS.Timeout;
     private poolSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
-    private masterSwitchState: number;
+    private scheduleEnabled: boolean;
 
 	constructor(options: any) {
         if (options === undefined ||
@@ -23,7 +23,7 @@ export class Controller {
             typeof options.gpio == "undefined") {
 			throw "options is undefined";
 		}
-        this.masterSwitchState = 0;
+        this.scheduleEnabled = false;
 
         this.gpio = options.gpio;
 
@@ -61,7 +61,7 @@ export class Controller {
             hour: number = today.getHours(),
             minute: number = today.getMinutes();
         
-        if (this.masterSwitchState === 1) {
+        if (this.scheduleEnabled) {
 		    if (this.poolSchedule.startHour === hour && this.poolSchedule.startMinute === minute) {
 			    if (this.gpio.Pool.readSync() === 0) {
 				    this.gpio.setPin(this.gpio.Pool, 1);
@@ -87,21 +87,18 @@ export class Controller {
 			    }
 		    }
         }
-	}
+    }
     masterSwitchStatus(req: Request, res: Response) {
 		let result = {
-			Data: this.masterSwitchState
+			Data: this.scheduleEnabled
 		};
 		res.send(JSON.stringify(result));
     }
 	toggleMasterSwitch(req: Request, res: Response) {
-        if (this.masterSwitchState === 0) {
-            this.masterSwitchState = 1;
-        } else if (this.masterSwitchState === 1) {
-            this.masterSwitchState = 0;
-        }
+        this.scheduleEnabled = !this.scheduleEnabled;
+
 		let result = {
-			Data: this.masterSwitchState
+			Data: this.scheduleEnabled
 		};
 		res.send(JSON.stringify(result));
 	}
@@ -156,7 +153,8 @@ export class Controller {
     setSchedule(req: Request, res: Response): void {
 		//var result = this.gpio.setSchedule(req.query.startDate, req.query.endDate);
 		//res.send(JSON.stringify(result));
-        let msg, result, startDate, endDate, endDateHour, endDateMinute, startDateHour, startDateMinute, boosterEndHour, boosterEndMinute;
+        let msg, result, startDate, endDate, endDateHour, endDateMinute, 
+            startDateHour, startDateMinute, boosterEndHour, boosterEndMinute;
 
         if (!req.query.startDate || !req.query.endDate) {
             msg = "Invalid start or end date"; 
@@ -166,6 +164,8 @@ export class Controller {
         }
 
         try {
+            console.log(">> isActive = " + req.query.isActive);
+            this.scheduleEnabled = req.query.isActive;
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
 
