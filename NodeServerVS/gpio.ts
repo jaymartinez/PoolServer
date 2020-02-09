@@ -27,7 +27,7 @@ export class GPIO {
         this.poolPumpPin = 5;
         this.spaPumpPin = 6;
         this.heaterPin = 17;
-        this.boosterPumpPin = 18;
+        this.boosterPumpPin = 13;
         this.poolLightPin = 19;
         this.spaLightPin = 20;
         this.groundLightsPin = 21;
