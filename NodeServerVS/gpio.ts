@@ -105,7 +105,7 @@ export class GPIO {
                 return this.spa.readSync();
             case "17":
                 return this.heater.readSync();
-            case "18":
+            case "13":
                 return this.booster.readSync();
             case "19":
                 return this.poolLight.readSync();
