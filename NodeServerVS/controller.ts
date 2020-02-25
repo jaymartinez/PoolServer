@@ -166,7 +166,7 @@ export class Controller {
 
         try {
             console.log(">> isActive = " + req.query.isActive);
-            this.scheduleEnabled = req.query.isActive;
+            this.scheduleEnabled = req.query.isActive === "True" || req.query.isActive === "true" ? true : false;
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
 
