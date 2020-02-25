@@ -27,7 +27,7 @@ export class GPIO {
         this.poolPumpPin = 5;
         this.spaPumpPin = 6;
         this.heaterPin = 17;
-        this.boosterPumpPin = 18;
+        this.boosterPumpPin = 13;
         this.poolLightPin = 19;
         this.spaLightPin = 20;
         this.groundLightsPin = 21;
@@ -105,7 +105,7 @@ export class GPIO {
                 return this.spa.readSync();
             case "17":
                 return this.heater.readSync();
-            case "18":
+            case "13":
                 return this.booster.readSync();
             case "19":
                 return this.poolLight.readSync();
@@ -150,25 +150,18 @@ export class GPIO {
         let initialPinState = gpio.readSync(),
             finalStateString = "",
             finalState,
-            result,
-            pinObject = {};
+            result;
 
         if (initialPinState === 1) {
             //Set pin low
-            //console.log("setting pin low");
             gpio.writeSync(0);
         } else {
             //Set pin high
-            //console.log("setting pin high");
             gpio.writeSync(1);
         }
 
-        //var state = digitalRead == digital.HIGH ? "HIGH" : "LOW";
         finalState = gpio.readSync();
         finalStateString = finalState === 1 ? "On" : "Off";
-
-        pinObject["State"] = finalState;
-        pinObject["PinNumber"] = pin;
 
         result = {
             Data: {
@@ -176,7 +169,7 @@ export class GPIO {
                 PinNumber: pin
             }
         };
-        console.log("Request received: PIN is now " + finalStateString);
+        console.log("Request received: PIN " + pin + " is now " + finalStateString);
 
         return result;
     }
