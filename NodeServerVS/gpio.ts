@@ -90,7 +90,7 @@ export class GPIO {
         } else {
             pin.DateDeactivated = new Date(Date.now());
             finalStateString = "Off";
-            console.log(pin.Name + " deactivated at " + pin.DateActivated.toLocaleString());
+            console.log(pin.Name + " deactivated at " + pin.DateDeactivated.toLocaleString());
         }
 
         result = {
