@@ -151,7 +151,7 @@ export class Controller {
 		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater)));
     }
     setSchedule(req: Request, res: Response): void {
-        let msg, result, startDate, endDate, endDateHour, endDateMinute, 
+        let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, 
             startDateHour, startDateMinute, boosterEndHour, boosterEndMinute;
 
         if (!req.query.startDate || !req.query.endDate) {
@@ -167,7 +167,7 @@ export class Controller {
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
 
-            console.log("EndDate - StartDate (in minutes) = " + ((endDate - startDate) / 1000).toString());
+            console.log("Start: " + startDate.toLocaleTimeString() + "\n" + "End: " + endDate.toLocaleTimeString());
 
             startDateHour = startDate.getHours();
             startDateMinute = startDate.getMinutes();
