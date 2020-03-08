@@ -1,91 +1,33 @@
-﻿//import { Gpio } from "onoff";
-//import { Direction } from "onoff";
-//import { BinaryValue } from "onoff";
-import * as onoff from "onoff";
-
-
-declare var _masterSwitchState: boolean;
+﻿import * as onoff from "onoff";
+import { PiPin } from "./piPin";
 
 export class GPIO {
-    private poolPumpPin: number;
-    private spaPumpPin: number;
-    private heaterPin: number;
-    private boosterPumpPin: number;
-    private poolLightPin: number;
-    private spaLightPin: number;
-    private groundLightsPin: number;
-
-    private pool: onoff.Gpio;
-    private spa: onoff.Gpio;
-    private booster: onoff.Gpio;
-    private poolLight: onoff.Gpio;
-    private spaLight: onoff.Gpio;
-    private groundLights: onoff.Gpio;
-    private heater: onoff.Gpio;
+    private poolPin: PiPin;
+    private spaPin: PiPin;
+    private heaterPin: PiPin;
+    private boosterPin: PiPin;
+    private poolLightPin: PiPin;
+    private spaLightPin: PiPin;
+    private groundLightsPin: PiPin;
 
     constructor() {
-        this.poolPumpPin = 5;
-        this.spaPumpPin = 6;
-        this.heaterPin = 17;
-        this.boosterPumpPin = 13;
-        this.poolLightPin = 19;
-        this.spaLightPin = 20;
-        this.groundLightsPin = 21;
-
-        this.init();
-    }
-
-    get PoolPumpPin(): number {
-        return this.poolPumpPin;
-    }
-    get SpaPumpPin(): number {
-        return this.spaPumpPin;
-    }
-    get HeaterPin(): number {
-        return this.heaterPin;
-    }
-    get BoosterPumpPin(): number {
-        return this.boosterPumpPin;
-    }
-    get PoolLightPin(): number {
-        return this.poolLightPin;
-    }
-    get SpaLightPin(): number {
-        return this.spaLightPin;
-    }
-    get GroundLightsPin(): number {
-        return this.groundLightsPin;
-    }
-    get Pool(): onoff.Gpio {
-        return this.pool;
-    }
-    get Spa(): onoff.Gpio {
-        return this.spa;
-    }
-    get Booster(): onoff.Gpio {
-        return this.booster;
-    }
-    get PoolLight(): onoff.Gpio {
-        return this.poolLight;
-    }
-    get SpaLight(): onoff.Gpio {
-        return this.spaLight;
-    }
-    get GroundLights(): onoff.Gpio {
-        return this.groundLights;
-    }
-    get Heater(): onoff.Gpio {
-        return this.heater;
+        this.poolPin = new PiPin(5);
+        this.spaPin = new PiPin(6);
+        this.heaterPin = new PiPin(17);
+        this.boosterPin = new PiPin(13);
+        this.poolLightPin = new PiPin(19);
+        this.spaLightPin = new PiPin(20);
+        this.groundLightsPin = new PiPin(21);
     }
 
     init() {
-        this.pool = this.createGpio(this.poolPumpPin, "out");
-        this.spa = this.createGpio(this.spaPumpPin, "out");
-        this.booster = this.createGpio(this.boosterPumpPin, "out");
-        this.poolLight = this.createGpio(this.poolLightPin, "out");
-        this.spaLight = this.createGpio(this.spaLightPin, "out");
-        this.groundLights = this.createGpio(this.groundLightsPin, "out");
-        this.heater = this.createGpio(this.heaterPin, "out");
+        this.poolPin.Gpio = this.createGpio(this.poolPin.PinNumber, "out");
+        this.spaPin.Gpio = this.createGpio(this.spaPin.PinNumber, "out");
+        this.boosterPin.Gpio = this.createGpio(this.boosterPin.PinNumber, "out");
+        this.poolLightPin.Gpio = this.createGpio(this.poolLightPin.PinNumber, "out");
+        this.spaLightPin.Gpio = this.createGpio(this.spaLightPin.PinNumber, "out");
+        this.groundLightsPin.Gpio = this.createGpio(this.groundLightsPin.PinNumber, "out");
+        this.heaterPin.Gpio = this.createGpio(this.heaterPin.PinNumber, "out");
     }
 
     createGpio(pin: number, direction: onoff.Direction): onoff.Gpio {
@@ -93,85 +35,97 @@ export class GPIO {
         return new onoff.Gpio(pin, direction);
     }
 
-    setPin(pinObj: onoff.Gpio, state: onoff.BinaryValue) {
-        pinObj.writeSync(state);
-    }
-
-    pinStatus(pin: string) {
+    pinStatus(pin: string): PiPin {
         switch (pin) {
             case "5":
-                return this.pool.readSync();
+                this.poolPin.State = this.readPin(this.poolPin);
+                return this.poolPin;
             case "6":
-                return this.spa.readSync();
+                this.spaPin.State = this.readPin(this.spaPin);
+                return this.spaPin;
             case "17":
-                return this.heater.readSync();
+                this.heaterPin.State = this.readPin(this.heaterPin);
+                return this.heaterPin;
             case "13":
-                return this.booster.readSync();
+                this.boosterPin.State = this.readPin(this.boosterPin);
+                return this.boosterPin;
             case "19":
-                return this.poolLight.readSync();
+                this.poolLightPin.State = this.readPin(this.poolLightPin);
+                return this.poolLightPin;
             case "20":
-                return this.spaLight.readSync();
+                this.spaLightPin.State = this.readPin(this.spaLightPin);
+                return this.spaLightPin;
             case "21":
-                return this.groundLights.readSync();
+                this.groundLightsPin.State = this.readPin(this.groundLightsPin);
+                return this.groundLightsPin;
+            default:
+                throw "Unsupported pin number";
         }
     }
 
-    getEquipmentName(pin: number) {
-        let equipment = "";
-
-        switch (pin) {
-            case this.poolPumpPin:
-                equipment = "Pool Pump";
-                break;
-            case this.spaPumpPin:
-                equipment = "Spa Pump";
-                break;
-            case this.heaterPin:
-                equipment = "Heater";
-                break;
-            case this.boosterPumpPin:
-                equipment = "Booster Pump";
-                break;
-            case this.poolLightPin:
-                equipment = "Pool Light";
-                break;
-            case this.spaLightPin:
-                equipment = "Spa Light";
-                break;
-            case this.groundLightsPin:
-                equipment = "Ground Lights";
-                break;
-        }
-
-        return equipment;
+    readPin(pin: PiPin): onoff.BinaryValue {
+        return pin.Gpio.readSync();
     }
 
-    toggle(gpio: any, pin: any) {
-        let initialPinState = gpio.readSync(),
-            finalStateString = "",
-            finalState,
-            result;
+    toggle(pin: PiPin) {
+        let initialPinState: onoff.BinaryValue = pin.Gpio.readSync(),
+            finalStateString: string = "",
+            result: any = {};
 
         if (initialPinState === 1) {
             //Set pin low
-            gpio.writeSync(0);
+            pin.Gpio.writeSync(0);
         } else {
             //Set pin high
-            gpio.writeSync(1);
+            pin.Gpio.writeSync(1);
         }
 
-        finalState = gpio.readSync();
-        finalStateString = finalState === 1 ? "On" : "Off";
+        // final state
+        pin.State = pin.Gpio.readSync();
+
+        if (pin.State === 1) {
+            pin.DateActivated = new Date(Date.now());
+            finalStateString = "On";
+            console.log(pin.Name + " active at " + pin.DateActivated.toLocaleString());
+        } else {
+            pin.DateDeactivated = new Date(Date.now());
+            finalStateString = "Off";
+            console.log(pin.Name + " deactivated at " + pin.DateDeactivated.toLocaleString());
+        }
 
         result = {
             Data: {
-                State: finalState,
-                PinNumber: pin
+                State: pin.State,
+                PinNumber: pin.PinNumber,
+                DateActivated: pin.DateActivated,
+                DateDeactivated: pin.DateDeactivated
             }
         };
-        console.log("Request received: PIN " + pin + " is now " + finalStateString);
+        console.log("Request received: " + pin.Name + " is now " + finalStateString);
 
         return result;
+    }
+
+    get Pool(): PiPin {
+        return this.poolPin;
+    }
+    get Spa(): PiPin {
+        return this.spaPin;
+    }
+    get Booster(): PiPin {
+        return this.boosterPin;
+    }
+    get PoolLight(): PiPin {
+        return this.poolLightPin;
+    }
+    get SpaLight(): PiPin {
+        return this.spaLightPin;
+    }
+    get GroundLights(): PiPin {
+        return this.groundLightsPin;
+    }
+    get Heater(): PiPin {
+        return this.heaterPin;
     }
 }
 
