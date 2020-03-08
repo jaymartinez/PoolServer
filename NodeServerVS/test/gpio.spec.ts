@@ -1,51 +1,157 @@
 ﻿import {should, ok} from "should";
+import { Direction } from "onoff";
 import * as sinon from "sinon";
 import { Gpio } from "onoff";
 import { GPIO } from "../gpio";
+import * as onoff from "onoff";
+import { PiPin } from "../piPin";
 
 var persist = should;
 
 describe("Gpio tests", () => {
-    let fakeOnoff: sinon.SinonStubbedInstance<Gpio>;
-    let _gpio: GPIO;
+    let _fakeOnoff: sinon.SinonStubbedInstance<Gpio>;
+    const poolPumpPin: number = 5;
+    const spaPumpPin: number = 6;
+    const heaterPin: number = 17;
+    const boosterPumpPin: number = 13;
+    const poolLightPin: number = 19;
+    const spaLightPin: number = 20;
+    const groundLightsPin: number = 21;
     const fakeMethod: any = () => { return; };
 
     beforeEach(() => {
-        //fakeOnoff = sinon.createStubInstance(Gpio);
-        _gpio = new GPIO();
-
-        sinon.stub(_gpio, "createGpio").callsFake((pin, direction) => {
-            let fakeGpioObject: any = {};
-            fakeGpioObject.pinNumber = 0;
-            fakeGpioObject.writeSync = (state: any) => {
-                return;
-            };
-
-            return fakeGpioObject;
-        });
+        _fakeOnoff = sinon.createStubInstance(Gpio);
     });
 
-    it("Tests gpio exists", () => {
-        _gpio.should.be.instanceOf(GPIO);
+    it("Init creates gpio", () => {
+        // arrange
+        let gpio = new GPIO();
+        let stub = sinon.stub(gpio, "createGpio");
+
+        // act
+        gpio.init();
+
+        // assert
+        stub.withArgs(poolPumpPin, "out").called.should.be.true("pool");
+        stub.withArgs(spaPumpPin, "out").called.should.be.true("spa");
+        stub.withArgs(boosterPumpPin, "out").called.should.be.true("booster");
+        stub.withArgs(poolLightPin, "out").called.should.be.true("poollight");
+        stub.withArgs(spaLightPin, "out").called.should.be.true("spalight");
+        stub.withArgs(groundLightsPin, "out").called.should.be.true("groundlights");
+        stub.withArgs(heaterPin, "out").called.should.be.true("heater");
     });
 
     it("Tests constructor sets pins", () => {
-        _gpio.PoolPumpPin.should.equal(5);
-        _gpio.SpaPumpPin.should.equal(6);
-        _gpio.HeaterPin.should.equal(17);
-        _gpio.BoosterPumpPin.should.equal(18);
-        _gpio.PoolLightPin.should.equal(19);
-        _gpio.SpaLightPin.should.equal(20);
-        _gpio.GroundLightsPin.should.equal(21);
+        let gpio = new GPIO();
+
+        gpio.should.be.instanceOf(GPIO);
+        gpio.Pool.PinNumber.should.equal(5);
+        gpio.Spa.PinNumber.should.equal(6);
+        gpio.Heater.PinNumber.should.equal(17);
+        gpio.Booster.PinNumber.should.equal(13);
+        gpio.PoolLight.PinNumber.should.equal(19);
+        gpio.SpaLight.PinNumber.should.equal(20);
+        gpio.GroundLights.PinNumber.should.equal(21);
     });
 
-    it("Verifies setPin() calls writeSync with correct args", () => {
+    it("pinStatus verifies pool", () => {
         // arrange
-        _gpio.init();
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
 
         // act
-        _gpio.setPin(_gpio.Pool, 1);
+        gpio.pinStatus("5");
 
         // assert
+        stub.withArgs(gpio.Pool).called.should.be.true("");
+    });
+
+    it("pinStatus verifies spa", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("6");
+
+        // assert
+        stub.withArgs(gpio.Spa).called.should.be.true("");
+    });
+    it("pinStatus verifies heater", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("17");
+
+        // assert
+        stub.withArgs(gpio.Heater).called.should.be.true("");
+    });
+    it("pinStatus verifies booster", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("13");
+
+        // assert
+        stub.withArgs(gpio.Booster).called.should.be.true("");
+    });
+    it("pinStatus verifies pool light", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("19");
+
+        // assert
+        stub.withArgs(gpio.PoolLight).called.should.be.true("");
+    });
+    it("pinStatus verifies spa light", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("20");
+
+        // assert
+        stub.withArgs(gpio.SpaLight).called.should.be.true("");
+    });
+    it("pinStatus verifies ground lights", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("21");
+
+        // assert
+        stub.withArgs(gpio.GroundLights).called.should.be.true("");
+    });
+    it("pinStatus verifies spa status", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("5");
+
+        // assert
+        stub.withArgs(gpio.Pool).called.should.be.true("");
+    });
+    it("pinStatus verifies spa status", () => {
+        // arrange
+        const gpio = new GPIO();
+        let stub = sinon.stub(gpio, "readPin");
+
+        // act
+        gpio.pinStatus("5");
+
+        // assert
+        stub.withArgs(gpio.Pool).called.should.be.true("");
     });
 });

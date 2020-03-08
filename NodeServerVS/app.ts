@@ -6,21 +6,24 @@ import { _ } from "underscore";
 import * as https from "https";
 import * as fs from "fs";
 
+import { ControllerOptions } from "./typings/ControllerOptions";
+
 var app = express();
 
 module.exports = app;
 
 const _gpio = new GPIO();
+_gpio.init();
 
-const options: any = {
-    gpio: _gpio
+const options: ControllerOptions = {
+    gpio: _gpio,
+    enableSchedule: false
 };
 
 const controller = new Controller(options); 
 
 app.set('port', process.env.PORT || 9000);
 app.get('/ping', _.bind(controller.ping, controller));
-app.get('/login', _.bind(controller.login, controller));
 app.get('/poolPump', _.bind(controller.togglePoolPump, controller));
 app.get('/boosterPump', _.bind(controller.toggleBoosterPump, controller));
 app.get('/spaPump', _.bind(controller.toggleSpaPump, controller));
