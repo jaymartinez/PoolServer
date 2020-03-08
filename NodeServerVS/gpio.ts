@@ -37,33 +37,33 @@ export class GPIO {
     pinStatus(pin: string): PiPin {
         switch (pin) {
             case "5":
-                this.poolPin.State = this.readPin(this.poolPin);
+                this.readPin(this.poolPin);
                 return this.poolPin;
             case "6":
-                this.spaPin.State = this.readPin(this.spaPin);
+                this.readPin(this.spaPin);
                 return this.spaPin;
             case "17":
-                this.heaterPin.State = this.readPin(this.heaterPin);
+                this.readPin(this.heaterPin);
                 return this.heaterPin;
             case "13":
-                this.boosterPin.State = this.readPin(this.boosterPin);
+                this.readPin(this.boosterPin);
                 return this.boosterPin;
             case "19":
-                this.poolLightPin.State = this.readPin(this.poolLightPin);
+                this.readPin(this.poolLightPin);
                 return this.poolLightPin;
             case "20":
-                this.spaLightPin.State = this.readPin(this.spaLightPin);
+                this.readPin(this.spaLightPin);
                 return this.spaLightPin;
             case "21":
-                this.groundLightsPin.State = this.readPin(this.groundLightsPin);
+                this.readPin(this.groundLightsPin);
                 return this.groundLightsPin;
             default:
                 throw "Unsupported pin number";
         }
     }
 
-    readPin(pin: PiPin): onoff.BinaryValue {
-        return pin.Gpio.readSync();
+    readPin(pin: PiPin): void {
+        pin.State = pin.Gpio.readSync();
     }
 
     toggle(pin: PiPin) {
