@@ -100,7 +100,6 @@ export class GPIO {
                 DateDeactivated: pin.DateDeactivated
             }
         };
-        console.log("Request received: " + pin.Name + " is now " + finalStateString);
 
         return result;
     }
