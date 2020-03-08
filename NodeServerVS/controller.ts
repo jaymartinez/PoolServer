@@ -210,7 +210,6 @@ export class Controller {
         res.send(JSON.stringify(result));
     }
     pinStatus(req: Request, res: Response) {
-		console.log("ENTERED pinStatus: pin = " + req.query.pinNumber);
         const pin: PiPin = this.gpio.pinStatus(req.query.pinNumber);
         let result: any = {};
 
@@ -233,7 +232,6 @@ export class Controller {
 		}
 	}
     allStatuses(req: Request, res: Response) {
-        console.log("ENTERED allStatuses");
         var result = {
             Messages: ["allStatuses Response"]
         };
