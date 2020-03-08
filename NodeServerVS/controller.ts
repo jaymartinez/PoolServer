@@ -8,6 +8,8 @@ import { equal } from "assert";
 import { setInterval } from "timers";
 import { EquipmentSchedule } from "./typings/EquipmentSchedule";
 import { _ } from "underscore";
+import { ControllerOptions } from "./typings/ControllerOptions";
+import { PiPin } from "./piPin";
 
 export class Controller {
     private options: any;
@@ -17,13 +19,13 @@ export class Controller {
     private boosterSchedule: EquipmentSchedule;
     private scheduleEnabled: boolean;
 
-	constructor(options: any) {
+	constructor(options: ControllerOptions) {
         if (options === undefined ||
             typeof options === "undefined" ||
             typeof options.gpio == "undefined") {
 			throw "options is undefined";
 		}
-        this.scheduleEnabled = false;
+        this.scheduleEnabled = options.enableSchedule;
 
         this.gpio = options.gpio;
 
@@ -45,6 +47,10 @@ export class Controller {
         this.startTimer(1000);
 	}
 
+    get ScheduleEnabled(): boolean {
+        return this.scheduleEnabled;
+    }
+
     get PoolSchedule(): EquipmentSchedule {
         return this.poolSchedule;
     }
@@ -63,27 +69,31 @@ export class Controller {
         
         if (this.scheduleEnabled) {
 		    if (this.poolSchedule.startHour === hour && this.poolSchedule.startMinute === minute) {
-			    if (this.gpio.Pool.readSync() === 0) {
-				    this.gpio.setPin(this.gpio.Pool, 1);
-				    console.log("Pool pump active at " + (new Date(Date.now())).toLocaleString());
+			    if (this.gpio.Pool.Gpio.readSync() === 0) {
+                    this.gpio.Pool.Gpio.writeSync(1);
+                    this.gpio.Pool.DateActivated = new Date(Date.now());
+				    console.log("Pool pump active at " + this.gpio.Pool.DateActivated.toLocaleString());
 			    }
 		    }
 		    else if (this.poolSchedule.endHour === hour && this.poolSchedule.endMinute === minute) {
-			    if (this.gpio.Pool.readSync() === 1) {
-				    this.gpio.setPin(this.gpio.Pool, 0);
-				    console.log("Pool pump deactivated at " + (new Date(Date.now())).toLocaleString());
+			    if (this.gpio.Pool.Gpio.readSync() === 1) {
+                    this.gpio.Pool.Gpio.writeSync(0);
+                    this.gpio.Pool.DateDeactivated = new Date(Date.now());
+				    console.log("Pool pump deactivated at " + this.gpio.Pool.DateDeactivated.toLocaleString());
 			    }
 		    }
 		    if (this.boosterSchedule.startHour === hour && this.boosterSchedule.startMinute === minute) {
-			    if (this.gpio.Booster.readSync() === 0) {
-				    this.gpio.setPin(this.gpio.Booster, 1);
-				    console.log("Booster pump activated at " + (new Date(Date.now())).toLocaleString());
+			    if (this.gpio.Booster.Gpio.readSync() === 0) {
+                    this.gpio.Booster.Gpio.writeSync(1);
+                    this.gpio.Booster.DateActivated = new Date(Date.now());
+				    console.log("Booster pump activated at " + this.gpio.Booster.DateActivated.toLocaleString());
 			    }
 		    }
 		    else if (this.boosterSchedule.endHour === hour && this.boosterSchedule.endMinute === minute) {
-			    if (this.gpio.Booster.readSync() === 1) {
-				    this.gpio.setPin(this.gpio.Booster, 0);
-				    console.log("Booster pump deactivated at " + (new Date(Date.now())).toLocaleString());
+			    if (this.gpio.Booster.Gpio.readSync() === 1) {
+                    this.gpio.Booster.Gpio.writeSync(0);
+                    this.gpio.Booster.DateDeactivated = new Date(Date.now());
+				    console.log("Booster pump deactivated at " + this.gpio.Booster.DateDeactivated.toLocaleString());
 			    }
 		    }
         }
@@ -119,41 +129,28 @@ export class Controller {
 		var result = { Messages: ["OK"] };
 		res.send(JSON.stringify(result));
 	}
-	login(req, res) {
-		var user = req.query.username, password = req.query.password, response = {};
-		console.log("Login invoked at " + (new Date(Date.now())).toLocaleString());
-		if (user === "jaimee" && password === "Getyour0wnP@$$word") {
-			response = { messages: ["OK"] };
-		}
-		else {
-			response = { messages: ["FAIL"] };
-		}
-		res.send(200, JSON.stringify(response));
-	}
 	togglePoolPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Pool, this.gpio.PoolPumpPin)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Pool)));
 	}
 	toggleBoosterPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Booster, this.gpio.BoosterPumpPin)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Booster)));
     }
     toggleSpaPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Spa, this.gpio.SpaPumpPin)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Spa)));
     }
     togglePoolLight(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.PoolLight, this.gpio.PoolLightPin)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.PoolLight)));
     }
     toggleSpaLight(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.SpaLight, this.gpio.SpaLightPin)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.SpaLight)));
 	}
 	toggleGroundLights(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.GroundLights, this.gpio.GroundLightsPin)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.GroundLights)));
     }
     toggleHeater(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater, this.gpio.HeaterPin)));
+		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater)));
     }
     setSchedule(req: Request, res: Response): void {
-		//var result = this.gpio.setSchedule(req.query.startDate, req.query.endDate);
-		//res.send(JSON.stringify(result));
         let msg, result, startDate, endDate, endDateHour, endDateMinute, 
             startDateHour, startDateMinute, boosterEndHour, boosterEndMinute;
 
@@ -214,12 +211,18 @@ export class Controller {
     }
     pinStatus(req: Request, res: Response) {
 		console.log("ENTERED pinStatus: pin = " + req.query.pinNumber);
-		var pinState = this.gpio.pinStatus(req.query.pinNumber), result = {
-			Data: {
-				PinNumber: req.query.pinNumber,
-				State: pinState
-			}
+        const pin: PiPin = this.gpio.pinStatus(req.query.pinNumber);
+        let result: any = {};
+
+        result = {
+            Data: {
+                PinNumber: pin.PinNumber,
+                State: pin.State,
+                DateActivated: pin.DateActivated,
+                DateDeactivated: pin.DateDeactivated
+            }
 		};
+
 		try {
 			res.header("Access-Control-Allow-Origin", "*");
 			res.send(JSON.stringify(result));

@@ -46,7 +46,6 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include="forever-config.json" />
-    <Content Include="id_rsa" />
     <Content Include="node_modules\body-parser\HISTORY.md" />
     <Content Include="node_modules\body-parser\LICENSE" />
     <Content Include="node_modules\body-parser\node_modules\bytes\component.json" />
@@ -716,9 +715,6 @@
     <Folder Include="node_modules\underscore\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".mocharc.js">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="app.ts" />
     <Compile Include="controller.ts" />
     <Compile Include="node_modules\body-parser\index.js" />
@@ -1055,6 +1051,9 @@
     <TypeScriptCompile Include="gulpfile.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="piPin.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="test\controller.spec.ts">
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
@@ -1062,6 +1061,9 @@
     <TypeScriptCompile Include="test\gpio.spec.ts">
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="typings\ControllerOptions.d.ts">
+      <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="typings\EquipmentSchedule.d.ts">
       <SubType>Code</SubType>
