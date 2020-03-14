@@ -1,6 +1,6 @@
 //var onoffGpio = require("onoff").Gpio || { Gpio: function () { return; } };
 //var gpio = require("./gpio");
-import { GPIO } from "./gpio";
+import { DeviceManager } from "./deviceManager";
 import { Request, json } from "express";
 import { Response } from "express";
 import { ResolveOptions } from "dns";
@@ -13,21 +13,23 @@ import { PiPin } from "./piPin";
 
 export class Controller {
     private options: any;
-    private gpio: GPIO;
+    private device: DeviceManager;
     private timer: NodeJS.Timeout;
     private poolSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
     private scheduleEnabled: boolean;
+    private includeBoosterInSchedule: boolean;
 
 	constructor(options: ControllerOptions) {
         if (options === undefined ||
             typeof options === "undefined" ||
-            typeof options.gpio == "undefined") {
+            typeof options.device == "undefined") {
 			throw "options is undefined";
 		}
         this.scheduleEnabled = options.enableSchedule;
+        this.includeBoosterInSchedule = true;
 
-        this.gpio = options.gpio;
+        this.device = options.device;
 
         this.poolSchedule = {
             startHour: 8,
@@ -69,31 +71,31 @@ export class Controller {
         
         if (this.scheduleEnabled) {
 		    if (this.poolSchedule.startHour === hour && this.poolSchedule.startMinute === minute) {
-			    if (this.gpio.Pool.Gpio.readSync() === 0) {
-                    this.gpio.Pool.Gpio.writeSync(1);
-                    this.gpio.Pool.DateActivated = new Date(Date.now());
-				    console.log("Pool pump active at " + this.gpio.Pool.DateActivated.toLocaleString());
+			    if (this.device.Pool.Gpio.readSync() === 0) {
+                    this.device.Pool.Gpio.writeSync(1);
+                    this.device.Pool.DateActivated = new Date(Date.now());
+				    console.log("Pool pump active at " + this.device.Pool.DateActivated.toLocaleString());
 			    }
 		    }
 		    else if (this.poolSchedule.endHour === hour && this.poolSchedule.endMinute === minute) {
-			    if (this.gpio.Pool.Gpio.readSync() === 1) {
-                    this.gpio.Pool.Gpio.writeSync(0);
-                    this.gpio.Pool.DateDeactivated = new Date(Date.now());
-				    console.log("Pool pump deactivated at " + this.gpio.Pool.DateDeactivated.toLocaleString());
+			    if (this.device.Pool.Gpio.readSync() === 1) {
+                    this.device.Pool.Gpio.writeSync(0);
+                    this.device.Pool.DateDeactivated = new Date(Date.now());
+				    console.log("Pool pump deactivated at " + this.device.Pool.DateDeactivated.toLocaleString());
 			    }
 		    }
 		    if (this.boosterSchedule.startHour === hour && this.boosterSchedule.startMinute === minute) {
-			    if (this.gpio.Booster.Gpio.readSync() === 0) {
-                    this.gpio.Booster.Gpio.writeSync(1);
-                    this.gpio.Booster.DateActivated = new Date(Date.now());
-				    console.log("Booster pump activated at " + this.gpio.Booster.DateActivated.toLocaleString());
+			    if (this.device.Booster.Gpio.readSync() === 0) {
+                    this.device.Booster.Gpio.writeSync(1);
+                    this.device.Booster.DateActivated = new Date(Date.now());
+				    console.log("Booster pump activated at " + this.device.Booster.DateActivated.toLocaleString());
 			    }
 		    }
 		    else if (this.boosterSchedule.endHour === hour && this.boosterSchedule.endMinute === minute) {
-			    if (this.gpio.Booster.Gpio.readSync() === 1) {
-                    this.gpio.Booster.Gpio.writeSync(0);
-                    this.gpio.Booster.DateDeactivated = new Date(Date.now());
-				    console.log("Booster pump deactivated at " + this.gpio.Booster.DateDeactivated.toLocaleString());
+			    if (this.device.Booster.Gpio.readSync() === 1) {
+                    this.device.Booster.Gpio.writeSync(0);
+                    this.device.Booster.DateDeactivated = new Date(Date.now());
+				    console.log("Booster pump deactivated at " + this.device.Booster.DateDeactivated.toLocaleString());
 			    }
 		    }
         }
@@ -130,25 +132,25 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
 	togglePoolPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Pool)));
+		res.send(JSON.stringify(this.device.toggle(this.device.Pool)));
 	}
 	toggleBoosterPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Booster)));
+		res.send(JSON.stringify(this.device.toggle(this.device.Booster)));
     }
     toggleSpaPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Spa)));
+		res.send(JSON.stringify(this.device.toggle(this.device.Spa)));
     }
     togglePoolLight(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.PoolLight)));
+		res.send(JSON.stringify(this.device.toggle(this.device.PoolLight)));
     }
     toggleSpaLight(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.SpaLight)));
+		res.send(JSON.stringify(this.device.toggle(this.device.SpaLight)));
 	}
 	toggleGroundLights(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.GroundLights)));
+		res.send(JSON.stringify(this.device.toggle(this.device.GroundLights)));
     }
     toggleHeater(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater)));
+		res.send(JSON.stringify(this.device.toggle(this.device.Heater)));
     }
     setSchedule(req: Request, res: Response): void {
         let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, 
@@ -163,7 +165,13 @@ export class Controller {
 
         try {
             console.log(">> isActive = " + req.query.isActive);
-            this.scheduleEnabled = req.query.isActive === "True" || req.query.isActive === "true" ? true : false;
+
+            this.scheduleEnabled = req.query.isActive === "True"
+                || req.query.isActive === "true" ? true : false;
+
+            this.includeBoosterInSchedule = req.query.includeBooster == "True"
+                || req.query.includeBooster == "true" ? true : false;
+
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
 
@@ -210,7 +218,7 @@ export class Controller {
         res.send(JSON.stringify(result));
     }
     pinStatus(req: Request, res: Response) {
-        const pin: PiPin = this.gpio.pinStatus(req.query.pinNumber);
+        const pin: PiPin = this.device.pinStatus(req.query.pinNumber);
         let result: any = {};
 
         result = {

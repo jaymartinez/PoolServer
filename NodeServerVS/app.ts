@@ -1,22 +1,23 @@
 ﻿import * as http from "http";
 import * as express from "express";
 import { Controller } from "./controller";
-import { GPIO } from "./gpio";
+import { GPIO } from "./device";
 import { _ } from "underscore";
 import * as https from "https";
 import * as fs from "fs";
 
 import { ControllerOptions } from "./typings/ControllerOptions";
+import { DeviceManager } from "./deviceManager";
 
 var app = express();
 
 module.exports = app;
 
-const _gpio = new GPIO();
-_gpio.init();
+const _deviceManager = new DeviceManager();
+_deviceManager.init();
 
 const options: ControllerOptions = {
-    gpio: _gpio,
+    device: _deviceManager,
     enableSchedule: false
 };
 

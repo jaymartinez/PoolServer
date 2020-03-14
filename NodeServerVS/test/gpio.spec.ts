@@ -2,9 +2,10 @@
 import { Direction } from "onoff";
 import * as sinon from "sinon";
 import { Gpio } from "onoff";
-import { GPIO } from "../gpio";
+import { DeviceManager } from "../deviceManager";
 import * as onoff from "onoff";
 import { PiPin } from "../piPin";
+import { debug } from "util";
 
 var persist = should;
 
@@ -25,11 +26,11 @@ describe("Gpio tests", () => {
 
     it("Init creates gpio", () => {
         // arrange
-        let gpio = new GPIO();
-        let stub = sinon.stub(gpio, "createGpio");
+        let device = new DeviceManager();
+        let stub = sinon.stub(device, "createGpio");
 
         // act
-        gpio.init();
+        device.init();
 
         // assert
         stub.withArgs(poolPumpPin, "out").called.should.be.true("pool");
@@ -42,116 +43,116 @@ describe("Gpio tests", () => {
     });
 
     it("Tests constructor sets pins", () => {
-        let gpio = new GPIO();
+        let device = new DeviceManager();
 
-        gpio.should.be.instanceOf(GPIO);
-        gpio.Pool.PinNumber.should.equal(5);
-        gpio.Spa.PinNumber.should.equal(6);
-        gpio.Heater.PinNumber.should.equal(17);
-        gpio.Booster.PinNumber.should.equal(13);
-        gpio.PoolLight.PinNumber.should.equal(19);
-        gpio.SpaLight.PinNumber.should.equal(20);
-        gpio.GroundLights.PinNumber.should.equal(21);
+        device.should.be.instanceOf(DeviceManager);
+        device.Pool.PinNumber.should.equal(5);
+        device.Spa.PinNumber.should.equal(6);
+        device.Heater.PinNumber.should.equal(17);
+        device.Booster.PinNumber.should.equal(13);
+        device.PoolLight.PinNumber.should.equal(19);
+        device.SpaLight.PinNumber.should.equal(20);
+        device.GroundLights.PinNumber.should.equal(21);
     });
 
     it("pinStatus verifies pool", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("5");
+        device.pinStatus("5");
 
         // assert
-        stub.withArgs(gpio.Pool).called.should.be.true("");
+        stub.withArgs(device.Pool).called.should.be.true("");
     });
 
     it("pinStatus verifies spa", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("6");
+        device.pinStatus("6");
 
         // assert
-        stub.withArgs(gpio.Spa).called.should.be.true("");
+        stub.withArgs(device.Spa).called.should.be.true("");
     });
     it("pinStatus verifies heater", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("17");
+        device.pinStatus("17");
 
         // assert
-        stub.withArgs(gpio.Heater).called.should.be.true("");
+        stub.withArgs(device.Heater).called.should.be.true("");
     });
     it("pinStatus verifies booster", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("13");
+        device.pinStatus("13");
 
         // assert
-        stub.withArgs(gpio.Booster).called.should.be.true("");
+        stub.withArgs(device.Booster).called.should.be.true("");
     });
     it("pinStatus verifies pool light", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("19");
+        device.pinStatus("19");
 
         // assert
-        stub.withArgs(gpio.PoolLight).called.should.be.true("");
+        stub.withArgs(device.PoolLight).called.should.be.true("");
     });
     it("pinStatus verifies spa light", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("20");
+        device.pinStatus("20");
 
         // assert
-        stub.withArgs(gpio.SpaLight).called.should.be.true("");
+        stub.withArgs(device.SpaLight).called.should.be.true("");
     });
     it("pinStatus verifies ground lights", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("21");
+        device.pinStatus("21");
 
         // assert
-        stub.withArgs(gpio.GroundLights).called.should.be.true("");
+        stub.withArgs(device.GroundLights).called.should.be.true("");
     });
     it("pinStatus verifies spa status", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("5");
+        device.pinStatus("5");
 
         // assert
-        stub.withArgs(gpio.Pool).called.should.be.true("");
+        stub.withArgs(device.Pool).called.should.be.true("");
     });
     it("pinStatus verifies spa status", () => {
         // arrange
-        const gpio = new GPIO();
-        let stub = sinon.stub(gpio, "readPin");
+        const device = new DeviceManager();
+        let stub = sinon.stub(device, "readPin");
 
         // act
-        gpio.pinStatus("5");
+        device.pinStatus("5");
 
         // assert
-        stub.withArgs(gpio.Pool).called.should.be.true("");
+        stub.withArgs(device.Pool).called.should.be.true("");
     });
 });

@@ -1047,7 +1047,7 @@
     <Compile Include="node_modules\underscore\underscore.js" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="gpio.ts" />
+    <TypeScriptCompile Include="deviceManager.ts" />
     <TypeScriptCompile Include="gulpfile.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

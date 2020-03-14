@@ -1,4 +1,6 @@
-﻿export interface ControllerOptions {
+﻿import { DeviceManager } from "../deviceManager";
+
+export interface ControllerOptions {
     enableSchedule: boolean;
-    gpio: any;
+    device: DeviceManager;
 }

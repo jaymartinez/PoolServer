@@ -1,7 +1,7 @@
 ﻿import * as onoff from "onoff";
 import { PiPin } from "./piPin";
 
-export class GPIO {
+export class DeviceManager {
     private poolPin: PiPin;
     private spaPin: PiPin;
     private heaterPin: PiPin;

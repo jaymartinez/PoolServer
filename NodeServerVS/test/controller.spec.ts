@@ -1,7 +1,7 @@
 ﻿import { should, ok } from "should";
 import * as sinon from "sinon";
 import * as controller from "../controller";
-import { GPIO } from "../gpio";
+import { DeviceManager } from "../deviceManager";
 import { setInterval } from "timers";
 import { after } from "mocha";
 import { ControllerOptions } from "../typings/ControllerOptions";
@@ -15,45 +15,45 @@ describe("Controller Tests", () => {
     var clock;
 
     beforeEach(() => {
-        let gpio = sinon.createStubInstance(GPIO); 
-        sinon.stub(gpio, "Pool").returns({
+        let device = new DeviceManager();
+        sinon.stub(device, "Pool").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "Spa").returns({
+        sinon.stub(device, "Spa").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "Booster").returns({
+        sinon.stub(device, "Booster").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "PoolLight").returns({
+        sinon.stub(device, "PoolLight").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "SpaLight").returns({
+        sinon.stub(device, "SpaLight").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "GroundLights").returns({
+        sinon.stub(device, "GroundLights").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "Heater").returns({
+        sinon.stub(device, "Heater").returns({
             readSync: function () {
                 return;
             }
         });
 
         const opts: ControllerOptions = {
-            gpio: gpio,
+            device: device,
             enableSchedule: false
         };
         c = new controller.Controller(opts);
@@ -81,5 +81,4 @@ describe("Controller Tests", () => {
         c.BoosterSchedule.endHour.should.be.equal(12);
         c.BoosterSchedule.endMinute.should.be.equal(0);
     });
-
 });
