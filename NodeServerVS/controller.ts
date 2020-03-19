@@ -77,6 +77,8 @@ export class Controller {
 		    }
 		    else if (this.poolSchedule.endHour === hour && this.poolSchedule.endMinute === minute) {
 			    if (this.gpio.Pool.Gpio.readSync() === 1) {
+                    this.gpio.Booster.Gpio.writeSync(0);
+                    this.gpio.Heater.Gpio.writeSync(0);
                     this.gpio.Pool.Gpio.writeSync(0);
                     this.gpio.Pool.DateDeactivated = new Date(Date.now());
 				    console.log("Pool pump deactivated at " + this.gpio.Pool.DateDeactivated.toLocaleString());
