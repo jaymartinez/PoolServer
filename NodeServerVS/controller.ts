@@ -1,6 +1,6 @@
 //var onoffGpio = require("onoff").Gpio || { Gpio: function () { return; } };
 //var gpio = require("./gpio");
-import { GPIO } from "./gpio";
+import { GPIO, PumpState } from "./gpio";
 import { Request, json } from "express";
 import { Response } from "express";
 import { ResolveOptions } from "dns";
@@ -253,11 +253,18 @@ export class Controller {
 		}
 	}
     allStatuses(req: Request, res: Response) {
-        var result = {
-            Messages: ["allStatuses Response"]
+        const result = {
+            Data: this.gpio.allStatuses()
         };
 
-        res.send(JSON.stringify(result));
+		try {
+			res.header("Access-Control-Allow-Origin", "*");
+            res.send(JSON.stringify(result));
+		}
+		catch (ex) {
+			console.log(ex.message || "There was an error sending the response from method [allStatuses()]");
+            res.send(JSON.stringify({ Messages: [ex.message] }));
+		}
     }
 }
 
