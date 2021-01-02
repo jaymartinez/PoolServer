@@ -54,7 +54,8 @@ describe("Controller Tests", () => {
 
         const opts: ControllerOptions = {
             gpio: gpio,
-            enableSchedule: false
+            enableSchedule: false,
+            includeBoosterWithSchedule: false
         };
         c = new controller.Controller(opts);
         clock = sinon.useFakeTimers();
