@@ -17,7 +17,8 @@ _gpio.init();
 
 const options: ControllerOptions = {
     gpio: _gpio,
-    enableSchedule: false
+    enableSchedule: false,
+    includeBoosterWithSchedule: false 
 };
 
 const controller = new Controller(options); 
@@ -36,6 +37,7 @@ app.get('/getSchedule', _.bind(controller.getSchedule, controller));
 app.get('/status', _.bind(controller.pinStatus, controller));
 app.get('/allStatuses', _.bind(controller.allStatuses, controller));
 app.get('/toggleMasterSwitch', _.bind(controller.toggleMasterSwitch, controller));
+app.get('/toggleIncludeBoosterSwitch', _.bind(controller.toggleIncludeBoosterSwitch, controller));
 app.get('/masterSwitchStatus', _.bind(controller.masterSwitchStatus, controller));
 
 http.createServer(app).listen(app.get('port'), function () {

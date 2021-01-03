@@ -37,29 +37,49 @@ export class GPIO {
     pinStatus(pin: string): PiPin {
         switch (pin) {
             case "5":
-                this.readPin(this.poolPin);
+                this.poolPin.State = this.poolPin.Gpio.readSync();
                 return this.poolPin;
             case "6":
-                this.readPin(this.spaPin);
+                this.spaPin.State = this.spaPin.Gpio.readSync();
                 return this.spaPin;
             case "17":
-                this.readPin(this.heaterPin);
+                this.heaterPin.State = this.heaterPin.Gpio.readSync();
                 return this.heaterPin;
             case "13":
-                this.readPin(this.boosterPin);
+                this.boosterPin.State = this.boosterPin.Gpio.readSync();
                 return this.boosterPin;
             case "19":
-                this.readPin(this.poolLightPin);
+                this.poolLightPin.State = this.poolLightPin.Gpio.readSync();
                 return this.poolLightPin;
             case "20":
-                this.readPin(this.spaLightPin);
+                this.spaLightPin.State = this.spaLightPin.Gpio.readSync();
                 return this.spaLightPin;
             case "21":
-                this.readPin(this.groundLightsPin);
+                this.groundLightsPin.State = this.groundLightsPin.Gpio.readSync();
                 return this.groundLightsPin;
             default:
                 throw "Unsupported pin number";
         }
+    }
+
+    allStatuses(): Array<PiPin> {
+        this.poolPin.State = this.poolPin.Gpio.readSync();
+        this.spaPin.State = this.spaPin.Gpio.readSync();
+        this.heaterPin.State = this.heaterPin.Gpio.readSync();
+        this.boosterPin.State = this.boosterPin.Gpio.readSync();
+        this.poolLightPin.State = this.poolLightPin.Gpio.readSync();
+        this.spaLightPin.State = this.spaLightPin.Gpio.readSync();
+        this.groundLightsPin.State = this.groundLightsPin.Gpio.readSync();
+
+        return [
+            this.Pool,
+            this.Spa,
+            this.Heater,
+            this.Booster,
+            this.PoolLight,
+            this.SpaLight,
+            this.GroundLights
+        ];
     }
 
     readPin(pin: PiPin): void {
