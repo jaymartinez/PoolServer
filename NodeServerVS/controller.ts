@@ -124,11 +124,13 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
     toggleIncludeBoosterSwitch(req: Request, res: Response) {
+
         this.includeBoosterWithSchedule = !this.includeBoosterWithSchedule;
 
 		let result = {
-			Data: this.includeBoosterWithSchedule
+			Data: this.includeBoosterWithSchedule ? 1 : 0
 		};
+        console.log("Toggling include booster - result is" + this.includeBoosterWithSchedule.toString());
 		res.send(JSON.stringify(result));
     }
 	getSchedule(req: Request, res: Response) {
