@@ -7,9 +7,10 @@ import { ResolveOptions } from "dns";
 import { equal } from "assert";
 import { setInterval } from "timers";
 import { EquipmentSchedule } from "./typings/EquipmentSchedule";
-import { _ } from "underscore";
+import * as _ from "underscore";
 import { ControllerOptions } from "./typings/ControllerOptions";
 import { PiPin } from "./piPin";
+import { pipeline } from "stream";
 
 export class Controller {
     private options: any;
@@ -253,8 +254,18 @@ export class Controller {
 		}
 	}
     allStatuses(req: Request, res: Response) {
+        var pins = this.gpio.allStatuses();
+
+        var newPins = _.map(pins, pin => {
+            let piPin = new PiPin(pin.PinNumber);
+            piPin.DateActivated = pin.DateActivated;
+            piPin.DateDeactivated = pin.DateDeactivated;
+            piPin.State = pin.State;
+            return piPin;
+        });
+
         const result = {
-            Data: this.gpio.allStatuses()
+            Data: newPins
         };
 
 		try {
