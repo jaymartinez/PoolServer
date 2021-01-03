@@ -119,7 +119,7 @@ export class Controller {
         this.scheduleEnabled = !this.scheduleEnabled;
 
 		let result = {
-			Data: this.scheduleEnabled
+			Data: this.scheduleEnabled ? 1 : 0
 		};
 		res.send(JSON.stringify(result));
 	}
