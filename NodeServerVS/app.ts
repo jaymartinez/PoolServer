@@ -7,6 +7,7 @@ import * as https from "https";
 import * as fs from "fs";
 
 import { ControllerOptions } from "./typings/ControllerOptions";
+import { PoolLightMode } from "./PoolLightMode";
 
 var app = express();
 
@@ -18,7 +19,8 @@ _gpio.init();
 const options: ControllerOptions = {
     gpio: _gpio,
     enableSchedule: false,
-    includeBoosterWithSchedule: false 
+    includeBoosterWithSchedule: false,
+    poolLightMode: PoolLightMode.notSet
 };
 
 const controller = new Controller(options); 
@@ -39,6 +41,8 @@ app.get('/allStatuses', _.bind(controller.allStatuses, controller));
 app.get('/toggleMasterSwitch', _.bind(controller.toggleMasterSwitch, controller));
 app.get('/toggleIncludeBoosterSwitch', _.bind(controller.toggleIncludeBoosterSwitch, controller));
 app.get('/masterSwitchStatus', _.bind(controller.masterSwitchStatus, controller));
+app.get('/savePoolLightMode', _.bind(controller.savePoolLightMode, controller));
+app.get('/getPoolLightMode', _.bind(controller.getPoolLightMode, controller));
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));

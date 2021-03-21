@@ -71,3 +71,4 @@ _Chutzpah*
 *.js.map
 *.js
 UpgradeLog.htm
+/NodeServerVS/NodeServerVS.njsproj.user
