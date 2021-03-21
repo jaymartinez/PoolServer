@@ -11,6 +11,7 @@ import * as _ from "underscore";
 import { ControllerOptions } from "./typings/ControllerOptions";
 import { PiPin } from "./piPin";
 import { pipeline } from "stream";
+import { PoolLightMode } from "./PoolLightMode";
 
 export class Controller {
     private options: any;
@@ -21,6 +22,7 @@ export class Controller {
     private scheduleEnabled: boolean;
     private includeBoosterWithSchedule: boolean;
     private poolLightMode: number;
+    private previousPoolLightMode: number;
 
 	constructor(options: ControllerOptions) {
         if (options === undefined ||
@@ -31,6 +33,7 @@ export class Controller {
         this.scheduleEnabled = options.enableSchedule;
         this.includeBoosterWithSchedule = options.includeBoosterWithSchedule;
         this.poolLightMode = options.poolLightMode;
+        this.previousPoolLightMode = PoolLightMode.notSet;
 
         this.gpio = options.gpio;
 
@@ -176,17 +179,24 @@ export class Controller {
 		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater)));
     }
     savePoolLightMode(req: Request, res: Response) {
+        this.previousPoolLightMode = this.poolLightMode;
         this.poolLightMode = req.query.mode;
 
         let result = {
-            Data: this.poolLightMode
+            Data: {
+                CurrentMode: this.poolLightMode,
+                PreviousMode: this.previousPoolLightMode
+            }
         };
         console.log("Saving pool light mode - result is" + this.poolLightMode.toString());
         res.send(JSON.stringify(result));
     }
     getPoolLightMode(req: Request, res: Response) {
         let result = {
-            Data: this.poolLightMode
+            Data: {
+                CurrentMode: this.poolLightMode,
+                PreviousMode: this.previousPoolLightMode
+            }
         };
         res.send(JSON.stringify(result));
     }
