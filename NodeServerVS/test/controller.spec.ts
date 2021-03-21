@@ -5,6 +5,7 @@ import { GPIO } from "../gpio";
 import { setInterval } from "timers";
 import { after } from "mocha";
 import { ControllerOptions } from "../typings/ControllerOptions";
+import { PoolLightMode } from "../PoolLightMode";
 
 /*tslint:disable prefer-const*/
 var persist = should;
@@ -55,7 +56,8 @@ describe("Controller Tests", () => {
         const opts: ControllerOptions = {
             gpio: gpio,
             enableSchedule: false,
-            includeBoosterWithSchedule: false
+            includeBoosterWithSchedule: false,
+            poolLightMode: PoolLightMode.notSet
         };
         c = new controller.Controller(opts);
         clock = sinon.useFakeTimers();
