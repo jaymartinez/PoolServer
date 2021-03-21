@@ -1,5 +1,7 @@
-﻿export interface ControllerOptions {
+﻿
+export interface ControllerOptions {
     enableSchedule: boolean;
-    includeBoosterWithSchedule: boolean,
+    poolLightMode: number;
+    includeBoosterWithSchedule: boolean;
     gpio: any;
 }

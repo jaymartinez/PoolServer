@@ -20,6 +20,7 @@ export class Controller {
     private boosterSchedule: EquipmentSchedule;
     private scheduleEnabled: boolean;
     private includeBoosterWithSchedule: boolean;
+    private poolLightMode: number;
 
 	constructor(options: ControllerOptions) {
         if (options === undefined ||
@@ -29,6 +30,7 @@ export class Controller {
 		}
         this.scheduleEnabled = options.enableSchedule;
         this.includeBoosterWithSchedule = options.includeBoosterWithSchedule;
+        this.poolLightMode = options.poolLightMode;
 
         this.gpio = options.gpio;
 
@@ -172,6 +174,21 @@ export class Controller {
     }
     toggleHeater(req: Request, res: Response) {
 		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater)));
+    }
+    savePoolLightMode(req: Request, res: Response) {
+        this.poolLightMode = req.query.mode;
+
+        let result = {
+            Data: this.poolLightMode
+        };
+        console.log("Saving pool light mode - result is" + this.poolLightMode.toString());
+        res.send(JSON.stringify(result));
+    }
+    getPoolLightMode(req: Request, res: Response) {
+        let result = {
+            Data: this.poolLightMode
+        };
+        res.send(JSON.stringify(result));
     }
     setSchedule(req: Request, res: Response): void {
         let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, 
