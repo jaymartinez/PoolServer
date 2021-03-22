@@ -35,6 +35,7 @@ app.get('/poolLight', _.bind(controller.togglePoolLight, controller));
 app.get('/groundLights', _.bind(controller.toggleGroundLights, controller));
 app.get('/heater', _.bind(controller.toggleHeater, controller));
 app.get('/setSchedule', _.bind(controller.setSchedule, controller));
+app.get('/setPoolLightSchedule', _.bind(controller.setPoolLightSchedule, controller));
 app.get('/getSchedule', _.bind(controller.getSchedule, controller));
 app.get('/status', _.bind(controller.pinStatus, controller));
 app.get('/allStatuses', _.bind(controller.allStatuses, controller));

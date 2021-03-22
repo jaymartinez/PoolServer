@@ -18,6 +18,7 @@ export class Controller {
     private gpio: GPIO;
     private timer: NodeJS.Timeout;
     private poolSchedule: EquipmentSchedule;
+    private poolLightSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
     private scheduleEnabled: boolean;
     private includeBoosterWithSchedule: boolean;
@@ -113,6 +114,21 @@ export class Controller {
 			    }
 		    }
         }
+
+        if (this.poolLightSchedule.startHour === hour && this.poolLightSchedule.startMinute === minute) {
+            if (this.gpio.PoolLight.Gpio.readSync() === 0) {
+                this.gpio.PoolLight.Gpio.writeSync(1);
+                this.gpio.PoolLight.DateActivated = new Date(Date.now());
+                console.log("Pool pump active at " + this.gpio.PoolLight.DateActivated.toLocaleString());
+            }
+        }
+        else if (this.poolLightSchedule.endHour === hour && this.poolLightSchedule.endMinute === minute) {
+            if (this.gpio.PoolLight.Gpio.readSync() === 1) {
+                this.gpio.PoolLight.Gpio.writeSync(0);
+                this.gpio.PoolLight.DateDeactivated = new Date(Date.now());
+                console.log("Pool Light deactivated at " + this.gpio.PoolLight.DateDeactivated.toLocaleString());
+            }
+        }
     }
     masterSwitchStatus(req: Request, res: Response) {
 		let result = {
@@ -198,6 +214,48 @@ export class Controller {
                 PreviousMode: this.previousPoolLightMode
             }
         };
+        res.send(JSON.stringify(result));
+    }
+    setPoolLightSchedule(req: Request, res: Response) {
+        let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, startDateHour, startDateMinute;
+
+        if (!req.query.startDate || !req.query.endDate) {
+            msg = "Invalid start or end date"; 
+            result = { messages: ["FAIL: " + msg] };
+            res.send(JSON.stringify(result));
+            return;
+        }
+
+        try {
+            startDate = new Date(req.query.startDate);
+            endDate = new Date(req.query.endDate);
+
+            console.log("Start: " + startDate.toLocaleTimeString() + "\n" + "End: " + endDate.toLocaleTimeString());
+
+            startDateHour = startDate.getHours();
+            startDateMinute = startDate.getMinutes();
+            endDateHour = endDate.getHours();
+            endDateMinute = endDate.getMinutes();
+
+            this.poolLightSchedule.endHour = endDateHour;
+            this.poolLightSchedule.endMinute = endDateMinute;
+            this.poolLightSchedule.startHour = startDateHour;
+            this.poolLightSchedule.startMinute = startDateMinute;
+
+            result = {
+                Data: {
+                    StartHour: this.poolLightSchedule.startHour,
+                    StartMinute: this.poolLightSchedule.startMinute,
+                    EndHour: this.poolLightSchedule.endHour,
+                    EndMinute: this.poolLightSchedule.endMinute
+                }
+            };
+
+        } catch (err) {
+            msg = err.message || err.getMessage();
+            result = { Messages: ["FAIL: " + msg] };
+        }
+
         res.send(JSON.stringify(result));
     }
     setSchedule(req: Request, res: Response): void {
