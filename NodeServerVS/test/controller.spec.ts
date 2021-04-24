@@ -70,6 +70,8 @@ describe("Controller Tests", () => {
 
     it("Verify default options", () => {
         c.ScheduleEnabled.should.be.equal(false);
+        c.PoolLightScheduleEnabled.should.be.equal(true);
+        c.GroundLightScheduleEnabled.should.be.equal(true);
     });
 
     it("Verifies c exists", () => {
@@ -85,6 +87,10 @@ describe("Controller Tests", () => {
         c.BoosterSchedule.startMinute.should.be.equal(35);
         c.BoosterSchedule.endHour.should.be.equal(12);
         c.BoosterSchedule.endMinute.should.be.equal(0);
+        c.PoolLightSchedule.startHour.should.be.equal(20);
+        c.GroundLightSchedule.startHour.should.be.equal(18);
+        c.GroundLightSchedule.endHour.should.be.equal(1);
+        c.PoolLightSchedule.endHour.should.be.equal(1);
     });
 
 });

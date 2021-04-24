@@ -90,6 +90,20 @@ export class Controller {
         return this.boosterSchedule;
     }
 
+    get PoolLightSchedule(): EquipmentSchedule {
+        return this.poolLightSchedule;
+    }
+    get GroundLightSchedule(): EquipmentSchedule {
+        return this.groundLightSchedule;
+    }
+
+    get PoolLightScheduleEnabled(): boolean {
+        return this.poolLightScheduleEnabled;
+    }
+    get GroundLightScheduleEnabled(): boolean {
+        return this.groundLightScheduleEnabled;
+    }
+
     startTimer(interval: number): void {
         this.timer = setInterval(_.bind(this.timerHandler, this), interval);
     }
