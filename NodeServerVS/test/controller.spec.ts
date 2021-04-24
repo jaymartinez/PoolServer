@@ -56,6 +56,8 @@ describe("Controller Tests", () => {
         const opts: ControllerOptions = {
             gpio: gpio,
             enableSchedule: false,
+            poolLightScheduleEnabled: true,
+            groundLightScheduleEnabled: true,
             includeBoosterWithSchedule: false,
             poolLightMode: PoolLightMode.notSet
         };
