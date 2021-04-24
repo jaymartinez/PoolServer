@@ -19,8 +19,11 @@ export class Controller {
     private timer: NodeJS.Timeout;
     private poolSchedule: EquipmentSchedule;
     private poolLightSchedule: EquipmentSchedule;
+    private groundLightSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
     private scheduleEnabled: boolean;
+    private poolLightScheduleEnabled: boolean;
+    private groundLightScheduleEnabled: boolean;
     private includeBoosterWithSchedule: boolean;
     private poolLightMode: number;
     private previousPoolLightMode: number;
@@ -32,6 +35,8 @@ export class Controller {
 			throw "options is undefined";
 		}
         this.scheduleEnabled = options.enableSchedule;
+        this.poolLightScheduleEnabled = options.poolLightScheduleEnabled;
+        this.groundLightScheduleEnabled = options.groundLightScheduleEnabled;
         this.includeBoosterWithSchedule = options.includeBoosterWithSchedule;
         this.poolLightMode = options.poolLightMode;
         this.previousPoolLightMode = PoolLightMode.notSet;
@@ -49,6 +54,20 @@ export class Controller {
             startHour: 8,
             startMinute: 35,
             endHour: 12,
+            endMinute: 0
+        };
+
+        this.poolLightSchedule = {
+            startHour: 20,
+            startMinute: 0,
+            endHour: 1,
+            endMinute: 0
+        };
+
+        this.groundLightSchedule = {
+            startHour: 18,
+            startMinute: 0,
+            endHour: 1,
             endMinute: 0
         };
 
@@ -115,18 +134,39 @@ export class Controller {
 		    }
         }
 
-        if (this.poolLightSchedule.startHour === hour && this.poolLightSchedule.startMinute === minute) {
-            if (this.gpio.PoolLight.Gpio.readSync() === 0) {
-                this.gpio.PoolLight.Gpio.writeSync(1);
-                this.gpio.PoolLight.DateActivated = new Date(Date.now());
-                console.log("Pool pump active at " + this.gpio.PoolLight.DateActivated.toLocaleString());
+        if (this.poolLightScheduleEnabled)
+        {
+            if (this.poolLightSchedule.startHour === hour && this.poolLightSchedule.startMinute === minute) {
+                if (this.gpio.PoolLight.Gpio.readSync() === 0) {
+                    this.gpio.PoolLight.Gpio.writeSync(1);
+                    this.gpio.PoolLight.DateActivated = new Date(Date.now());
+                    console.log("Pool Light active at " + this.gpio.PoolLight.DateActivated.toLocaleString());
+                }
+            }
+            else if (this.poolLightSchedule.endHour === hour && this.poolLightSchedule.endMinute === minute) {
+                if (this.gpio.PoolLight.Gpio.readSync() === 1) {
+                    this.gpio.PoolLight.Gpio.writeSync(0);
+                    this.gpio.PoolLight.DateDeactivated = new Date(Date.now());
+                    console.log("Pool Light deactivated at " + this.gpio.PoolLight.DateDeactivated.toLocaleString());
+                }
             }
         }
-        else if (this.poolLightSchedule.endHour === hour && this.poolLightSchedule.endMinute === minute) {
-            if (this.gpio.PoolLight.Gpio.readSync() === 1) {
-                this.gpio.PoolLight.Gpio.writeSync(0);
-                this.gpio.PoolLight.DateDeactivated = new Date(Date.now());
-                console.log("Pool Light deactivated at " + this.gpio.PoolLight.DateDeactivated.toLocaleString());
+
+        if (this.groundLightScheduleEnabled)
+        {
+            if (this.groundLightSchedule.startHour === hour && this.groundLightSchedule.startMinute === minute) {
+                if (this.gpio.GroundLights.Gpio.readSync() === 0) {
+                    this.gpio.GroundLights.Gpio.writeSync(1);
+                    this.gpio.GroundLights.DateActivated = new Date(Date.now());
+                    console.log("Ground Lights active at " + this.gpio.GroundLights.DateActivated.toLocaleString());
+                }
+            }
+            else if (this.groundLightSchedule.endHour === hour && this.groundLightSchedule.endMinute === minute) {
+                if (this.gpio.GroundLights.Gpio.readSync() === 1) {
+                    this.gpio.GroundLights.Gpio.writeSync(0);
+                    this.gpio.GroundLights.DateDeactivated = new Date(Date.now());
+                    console.log("Ground Lights deactivated at " + this.gpio.GroundLights.DateDeactivated.toLocaleString());
+                }
             }
         }
     }
@@ -154,6 +194,32 @@ export class Controller {
         console.log("Toggling include booster - result is" + this.includeBoosterWithSchedule.toString());
 		res.send(JSON.stringify(result));
     }
+    getGroundLightSchedule(req: Request, res: Response) {
+        console.log("Entered getGroundLightSchedule()");
+		var result = {
+			Data: {
+				StartHour: this.groundLightSchedule.startHour,
+				StartMinute: this.groundLightSchedule.startMinute,
+				EndHour: this.groundLightSchedule.endHour,
+				EndMinute: this.groundLightSchedule.endMinute,
+                IsActive: this.groundLightScheduleEnabled
+			}
+		};
+		res.send(JSON.stringify(result));
+	}
+    getPoolLightSchedule(req: Request, res: Response) {
+        console.log("Entered getPoolLightSchedule()");
+		var result = {
+			Data: {
+				StartHour: this.poolLightSchedule.startHour,
+				StartMinute: this.poolLightSchedule.startMinute,
+				EndHour: this.poolLightSchedule.endHour,
+				EndMinute: this.poolLightSchedule.endMinute,
+                IsActive: this.poolLightScheduleEnabled
+			}
+		};
+		res.send(JSON.stringify(result));
+	}
 	getSchedule(req: Request, res: Response) {
         console.log("Entered getSchedule()");
 		var result = {
@@ -214,6 +280,48 @@ export class Controller {
                 PreviousMode: this.previousPoolLightMode
             }
         };
+        res.send(JSON.stringify(result));
+    }
+    setGroundLightSchedule(req: Request, res: Response) {
+        let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, startDateHour, startDateMinute;
+
+        if (!req.query.startDate || !req.query.endDate) {
+            msg = "Invalid start or end date"; 
+            result = { messages: ["FAIL: " + msg] };
+            res.send(JSON.stringify(result));
+            return;
+        }
+
+        try {
+            startDate = new Date(req.query.startDate);
+            endDate = new Date(req.query.endDate);
+
+            console.log("Saving ground light schedule---Start: " + startDate.toLocaleTimeString() + "\n" + "End: " + endDate.toLocaleTimeString());
+
+            startDateHour = startDate.getHours();
+            startDateMinute = startDate.getMinutes();
+            endDateHour = endDate.getHours();
+            endDateMinute = endDate.getMinutes();
+
+            this.groundLightSchedule.endHour = endDateHour;
+            this.groundLightSchedule.endMinute = endDateMinute;
+            this.groundLightSchedule.startHour = startDateHour;
+            this.groundLightSchedule.startMinute = startDateMinute;
+
+            result = {
+                Data: {
+                    StartHour: this.groundLightSchedule.startHour,
+                    StartMinute: this.groundLightSchedule.startMinute,
+                    EndHour: this.groundLightSchedule.endHour,
+                    EndMinute: this.groundLightSchedule.endMinute
+                }
+            };
+
+        } catch (err) {
+            msg = err.message || err.getMessage();
+            result = { Messages: ["FAIL: " + msg] };
+        }
+
         res.send(JSON.stringify(result));
     }
     setPoolLightSchedule(req: Request, res: Response) {

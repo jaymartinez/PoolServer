@@ -19,6 +19,8 @@ _gpio.init();
 const options: ControllerOptions = {
     gpio: _gpio,
     enableSchedule: false,
+    poolLightScheduleEnabled: true,
+    groundLightScheduleEnabled: true,
     includeBoosterWithSchedule: false,
     poolLightMode: PoolLightMode.notSet
 };
@@ -35,8 +37,11 @@ app.get('/poolLight', _.bind(controller.togglePoolLight, controller));
 app.get('/groundLights', _.bind(controller.toggleGroundLights, controller));
 app.get('/heater', _.bind(controller.toggleHeater, controller));
 app.get('/setSchedule', _.bind(controller.setSchedule, controller));
-app.get('/setPoolLightSchedule', _.bind(controller.setPoolLightSchedule, controller));
 app.get('/getSchedule', _.bind(controller.getSchedule, controller));
+app.get('/setPoolLightSchedule', _.bind(controller.setPoolLightSchedule, controller));
+app.get('/getPoolLightSchedule', _.bind(controller.getPoolLightSchedule, controller));
+app.get('/setGroundLightSchedule', _.bind(controller.setGroundLightSchedule, controller));
+app.get('/getGroundLightSchedule', _.bind(controller.getGroundLightSchedule, controller));
 app.get('/status', _.bind(controller.pinStatus, controller));
 app.get('/allStatuses', _.bind(controller.allStatuses, controller));
 app.get('/toggleMasterSwitch', _.bind(controller.toggleMasterSwitch, controller));
