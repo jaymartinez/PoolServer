@@ -222,7 +222,7 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
     getPoolLightSchedule(req: Request, res: Response) {
-        console.log("Entered getPoolLightSchedule()");
+        console.log("Entering getPoolLightSchedule()");
 		var result = {
 			Data: {
 				StartHour: this.poolLightSchedule.startHour,
