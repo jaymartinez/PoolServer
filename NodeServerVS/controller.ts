@@ -482,7 +482,7 @@ export class Controller {
             res.send(JSON.stringify(result));
 		}
 		catch (ex) {
-			console.log(ex.message || "There was an error sending the response from method [allStatuses()]");
+			console.log(ex.message || "There was an error sending the response from method - [allStatuses()]");
             res.send(JSON.stringify({ Messages: [ex.message] }));
 		}
     }
