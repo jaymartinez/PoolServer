@@ -209,7 +209,7 @@ export class Controller {
 		res.send(JSON.stringify(result));
     }
     getGroundLightSchedule(req: Request, res: Response) {
-        console.log("Entered getGroundLightSchedule()");
+        console.log("Entering getGroundLightSchedule()");
 		var result = {
 			Data: {
 				StartHour: this.groundLightSchedule.startHour,
