@@ -2,7 +2,7 @@
 import * as express from "express";
 import { Controller } from "./controller";
 import { GPIO } from "./gpio";
-import { _ } from "underscore";
+import * as _ from "underscore";
 import * as https from "https";
 import * as fs from "fs";
 

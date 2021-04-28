@@ -218,7 +218,7 @@ export class Controller {
 		res.send(JSON.stringify(result));
     }
     getGroundLightSchedule(req: Request, res: Response) {
-        console.log("Entered getGroundLightSchedule()");
+        console.log("Entering getGroundLightSchedule()");
 		var result = {
 			Data: {
 				StartHour: this.groundLightSchedule.startHour,
@@ -231,7 +231,7 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
     getPoolLightSchedule(req: Request, res: Response) {
-        console.log("Entered getPoolLightSchedule()");
+        console.log("Entering getPoolLightSchedule()");
 		var result = {
 			Data: {
 				StartHour: this.poolLightSchedule.startHour,
@@ -552,7 +552,7 @@ export class Controller {
             res.send(JSON.stringify(result));
 		}
 		catch (ex) {
-			console.log(ex.message || "There was an error sending the response from method [allStatuses()]");
+			console.log(ex.message || "There was an error sending the response from method - [allStatuses()]");
             res.send(JSON.stringify({ Messages: [ex.message] }));
 		}
     }
