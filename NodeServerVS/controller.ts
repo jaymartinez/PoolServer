@@ -20,10 +20,12 @@ export class Controller {
     private poolSchedule: EquipmentSchedule;
     private poolLightSchedule: EquipmentSchedule;
     private groundLightSchedule: EquipmentSchedule;
+    private spaLightSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
     private scheduleEnabled: boolean;
     private poolLightScheduleEnabled: boolean;
     private groundLightScheduleEnabled: boolean;
+    private spaLightScheduleEnabled: boolean;
     private includeBoosterWithSchedule: boolean;
     private poolLightMode: number;
     private previousPoolLightMode: number;
@@ -58,6 +60,13 @@ export class Controller {
         };
 
         this.poolLightSchedule = {
+            startHour: 20,
+            startMinute: 0,
+            endHour: 1,
+            endMinute: 0
+        };
+
+        this.spaLightSchedule = {
             startHour: 20,
             startMinute: 0,
             endHour: 1,
@@ -234,6 +243,19 @@ export class Controller {
 		};
 		res.send(JSON.stringify(result));
 	}
+    getSpaLightSchedule(req: Request, res: Response) {
+        console.log("Entered getSpaLightSchedule()");
+		var result = {
+			Data: {
+				StartHour: this.spaLightSchedule.startHour,
+				StartMinute: this.spaLightSchedule.startMinute,
+				EndHour: this.spaLightSchedule.endHour,
+				EndMinute: this.spaLightSchedule.endMinute,
+                IsActive: this.spaLightScheduleEnabled
+			}
+		};
+		res.send(JSON.stringify(result));
+	}
 	getSchedule(req: Request, res: Response) {
         console.log("Entered getSchedule()");
 		var result = {
@@ -310,6 +332,7 @@ export class Controller {
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
 
+            console.log(">> setting ground light schedule active = " + req.query.isActive);
             console.log("Saving ground light schedule---Start: " + startDate.toLocaleTimeString() + "\n" + "End: " + endDate.toLocaleTimeString());
 
             startDateHour = startDate.getHours();
@@ -317,6 +340,7 @@ export class Controller {
             endDateHour = endDate.getHours();
             endDateMinute = endDate.getMinutes();
 
+            this.groundLightScheduleEnabled = req.query.isActive === "True" || req.query.isActive === "true" ? true : false;
             this.groundLightSchedule.endHour = endDateHour;
             this.groundLightSchedule.endMinute = endDateMinute;
             this.groundLightSchedule.startHour = startDateHour;
@@ -352,6 +376,7 @@ export class Controller {
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
 
+            console.log(">> setting pool light schedule active = " + req.query.isActive);
             console.log("Start: " + startDate.toLocaleTimeString() + "\n" + "End: " + endDate.toLocaleTimeString());
 
             startDateHour = startDate.getHours();
@@ -359,6 +384,7 @@ export class Controller {
             endDateHour = endDate.getHours();
             endDateMinute = endDate.getMinutes();
 
+            this.poolLightScheduleEnabled = req.query.isActive === "True" || req.query.isActive === "true" ? true : false;
             this.poolLightSchedule.endHour = endDateHour;
             this.poolLightSchedule.endMinute = endDateMinute;
             this.poolLightSchedule.startHour = startDateHour;
@@ -370,6 +396,50 @@ export class Controller {
                     StartMinute: this.poolLightSchedule.startMinute,
                     EndHour: this.poolLightSchedule.endHour,
                     EndMinute: this.poolLightSchedule.endMinute
+                }
+            };
+
+        } catch (err) {
+            msg = err.message || err.getMessage();
+            result = { Messages: ["FAIL: " + msg] };
+        }
+
+        res.send(JSON.stringify(result));
+    }
+    setSpaLightSchedule(req: Request, res: Response) {
+        let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, startDateHour, startDateMinute;
+
+        if (!req.query.startDate || !req.query.endDate) {
+            msg = "Invalid start or end date"; 
+            result = { messages: ["FAIL: " + msg] };
+            res.send(JSON.stringify(result));
+            return;
+        }
+
+        try {
+            startDate = new Date(req.query.startDate);
+            endDate = new Date(req.query.endDate);
+
+            console.log(">> setting spa light schedule active = " + req.query.isActive);
+            console.log("Start: " + startDate.toLocaleTimeString() + "\n" + "End: " + endDate.toLocaleTimeString());
+
+            startDateHour = startDate.getHours();
+            startDateMinute = startDate.getMinutes();
+            endDateHour = endDate.getHours();
+            endDateMinute = endDate.getMinutes();
+
+            this.spaLightScheduleEnabled = req.query.isActive === "True" || req.query.isActive === "true" ? true : false;
+            this.spaLightSchedule.endHour = endDateHour;
+            this.spaLightSchedule.endMinute = endDateMinute;
+            this.spaLightSchedule.startHour = startDateHour;
+            this.spaLightSchedule.startMinute = startDateMinute;
+
+            result = {
+                Data: {
+                    StartHour: this.spaLightSchedule.startHour,
+                    StartMinute: this.spaLightSchedule.startMinute,
+                    EndHour: this.spaLightSchedule.endHour,
+                    EndMinute: this.spaLightSchedule.endMinute
                 }
             };
 

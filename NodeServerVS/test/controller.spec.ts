@@ -58,6 +58,7 @@ describe("Controller Tests", () => {
             enableSchedule: false,
             poolLightScheduleEnabled: true,
             groundLightScheduleEnabled: true,
+            spaLightScheduleEnabled: true,
             includeBoosterWithSchedule: false,
             poolLightMode: PoolLightMode.notSet
         };
