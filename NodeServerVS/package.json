@@ -15,7 +15,7 @@
     "isarray": "^2.0.4",
     "onoff": "^4.1.1",
     "typescript": "3.3.3",
-    "underscore": "^1.9.1"
+    "underscore": "^1.12.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
