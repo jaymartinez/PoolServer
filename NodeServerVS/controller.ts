@@ -39,6 +39,7 @@ export class Controller {
         this.scheduleEnabled = options.enableSchedule;
         this.poolLightScheduleEnabled = options.poolLightScheduleEnabled;
         this.groundLightScheduleEnabled = options.groundLightScheduleEnabled;
+        this.spaLightScheduleEnabled = options.spaLightScheduleEnabled;
         this.includeBoosterWithSchedule = options.includeBoosterWithSchedule;
         this.poolLightMode = options.poolLightMode;
         this.previousPoolLightMode = PoolLightMode.notSet;
@@ -189,6 +190,24 @@ export class Controller {
                     this.gpio.GroundLights.Gpio.writeSync(0);
                     this.gpio.GroundLights.DateDeactivated = new Date(Date.now());
                     console.log("Ground Lights deactivated at " + this.gpio.GroundLights.DateDeactivated.toLocaleString());
+                }
+            }
+        }
+
+        if (this.spaLightScheduleEnabled)
+        {
+            if (this.spaLightSchedule.startHour === hour && this.spaLightSchedule.startMinute === minute) {
+                if (this.gpio.SpaLight.Gpio.readSync() === 0) {
+                    this.gpio.SpaLight.Gpio.writeSync(1);
+                    this.gpio.SpaLight.DateActivated = new Date(Date.now());
+                    console.log("Ground Lights active at " + this.gpio.SpaLight.DateActivated.toLocaleString());
+                }
+            }
+            else if (this.spaLightSchedule.endHour === hour && this.spaLightSchedule.endMinute === minute) {
+                if (this.gpio.SpaLight.Gpio.readSync() === 1) {
+                    this.gpio.SpaLight.Gpio.writeSync(0);
+                    this.gpio.SpaLight.DateDeactivated = new Date(Date.now());
+                    console.log("Ground Lights deactivated at " + this.gpio.SpaLight.DateDeactivated.toLocaleString());
                 }
             }
         }
