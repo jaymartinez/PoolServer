@@ -60,7 +60,8 @@ describe("Controller Tests", () => {
             groundLightScheduleEnabled: true,
             spaLightScheduleEnabled: true,
             includeBoosterWithSchedule: false,
-            poolLightMode: PoolLightMode.notSet
+            poolLightMode: PoolLightMode.notSet,
+            spaLightMode: PoolLightMode.notSet
         };
         c = new controller.Controller(opts);
         clock = sinon.useFakeTimers();
