@@ -23,7 +23,8 @@ const options: ControllerOptions = {
     spaLightScheduleEnabled: true,
     groundLightScheduleEnabled: true,
     includeBoosterWithSchedule: false,
-    poolLightMode: PoolLightMode.notSet
+    poolLightMode: PoolLightMode.notSet,
+    spaLightMode: PoolLightMode.notSet
 };
 
 const controller = new Controller(options); 
@@ -52,6 +53,8 @@ app.get('/toggleIncludeBoosterSwitch', _.bind(controller.toggleIncludeBoosterSwi
 app.get('/masterSwitchStatus', _.bind(controller.masterSwitchStatus, controller));
 app.get('/savePoolLightMode', _.bind(controller.savePoolLightMode, controller));
 app.get('/getPoolLightMode', _.bind(controller.getPoolLightMode, controller));
+app.get('/saveSpaLightMode', _.bind(controller.saveSpaLightMode, controller));
+app.get('/getSpaLightMode', _.bind(controller.getSpaLightMode, controller));
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));

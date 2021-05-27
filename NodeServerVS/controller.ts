@@ -29,6 +29,8 @@ export class Controller {
     private includeBoosterWithSchedule: boolean;
     private poolLightMode: number;
     private previousPoolLightMode: number;
+    private spaLightMode: number;
+    private previousSpaLightMode: number;
 
 	constructor(options: ControllerOptions) {
         if (options === undefined ||
@@ -42,6 +44,8 @@ export class Controller {
         this.includeBoosterWithSchedule = options.includeBoosterWithSchedule;
         this.poolLightMode = options.poolLightMode;
         this.previousPoolLightMode = PoolLightMode.notSet;
+        this.spaLightMode = options.spaLightMode;
+        this.previousSpaLightMode = PoolLightMode.notSet;
 
         this.gpio = options.gpio;
 
@@ -314,6 +318,28 @@ export class Controller {
             Data: {
                 CurrentMode: this.poolLightMode,
                 PreviousMode: this.previousPoolLightMode
+            }
+        };
+        res.send(JSON.stringify(result));
+    }
+    saveSpaLightMode(req: Request, res: Response) {
+        this.previousSpaLightMode = this.spaLightMode;
+        this.spaLightMode = req.query.mode;
+
+        let result = {
+            Data: {
+                CurrentMode: this.spaLightMode,
+                PreviousMode: this.previousSpaLightMode
+            }
+        };
+        console.log("Saving pool light mode - result is" + this.poolLightMode.toString());
+        res.send(JSON.stringify(result));
+    }
+    getSpaLightMode(req: Request, res: Response) {
+        let result = {
+            Data: {
+                CurrentMode: this.spaLightMode,
+                PreviousMode: this.previousSpaLightMode
             }
         };
         res.send(JSON.stringify(result));
