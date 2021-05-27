@@ -1,10 +1,7 @@
 ﻿import {should, ok} from "should";
-import { Direction } from "onoff";
 import * as sinon from "sinon";
 import { Gpio } from "onoff";
 import { GPIO } from "../gpio";
-import * as onoff from "onoff";
-import { PiPin } from "../piPin";
 
 var persist = should;
 

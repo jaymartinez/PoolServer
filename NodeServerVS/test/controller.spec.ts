@@ -56,8 +56,12 @@ describe("Controller Tests", () => {
         const opts: ControllerOptions = {
             gpio: gpio,
             enableSchedule: false,
+            poolLightScheduleEnabled: true,
+            groundLightScheduleEnabled: true,
+            spaLightScheduleEnabled: true,
             includeBoosterWithSchedule: false,
-            poolLightMode: PoolLightMode.notSet
+            poolLightMode: PoolLightMode.notSet,
+            spaLightMode: PoolLightMode.notSet
         };
         c = new controller.Controller(opts);
         clock = sinon.useFakeTimers();
@@ -68,6 +72,8 @@ describe("Controller Tests", () => {
 
     it("Verify default options", () => {
         c.ScheduleEnabled.should.be.equal(false);
+        c.PoolLightScheduleEnabled.should.be.equal(true);
+        c.GroundLightScheduleEnabled.should.be.equal(true);
     });
 
     it("Verifies c exists", () => {
@@ -83,6 +89,10 @@ describe("Controller Tests", () => {
         c.BoosterSchedule.startMinute.should.be.equal(35);
         c.BoosterSchedule.endHour.should.be.equal(12);
         c.BoosterSchedule.endMinute.should.be.equal(0);
+        c.PoolLightSchedule.startHour.should.be.equal(20);
+        c.GroundLightSchedule.startHour.should.be.equal(18);
+        c.GroundLightSchedule.endHour.should.be.equal(1);
+        c.PoolLightSchedule.endHour.should.be.equal(1);
     });
 
 });

@@ -2,7 +2,7 @@
 import * as express from "express";
 import { Controller } from "./controller";
 import { GPIO } from "./gpio";
-import { _ } from "underscore";
+import * as _ from "underscore";
 import * as https from "https";
 import * as fs from "fs";
 
@@ -19,8 +19,12 @@ _gpio.init();
 const options: ControllerOptions = {
     gpio: _gpio,
     enableSchedule: false,
+    poolLightScheduleEnabled: true,
+    spaLightScheduleEnabled: true,
+    groundLightScheduleEnabled: true,
     includeBoosterWithSchedule: false,
-    poolLightMode: PoolLightMode.notSet
+    poolLightMode: PoolLightMode.notSet,
+    spaLightMode: PoolLightMode.notSet
 };
 
 const controller = new Controller(options); 
@@ -36,6 +40,12 @@ app.get('/groundLights', _.bind(controller.toggleGroundLights, controller));
 app.get('/heater', _.bind(controller.toggleHeater, controller));
 app.get('/setSchedule', _.bind(controller.setSchedule, controller));
 app.get('/getSchedule', _.bind(controller.getSchedule, controller));
+app.get('/setPoolLightSchedule', _.bind(controller.setPoolLightSchedule, controller));
+app.get('/getPoolLightSchedule', _.bind(controller.getPoolLightSchedule, controller));
+app.get('/setGroundLightSchedule', _.bind(controller.setGroundLightSchedule, controller));
+app.get('/getGroundLightSchedule', _.bind(controller.getGroundLightSchedule, controller));
+app.get('/setSpaLightSchedule', _.bind(controller.setSpaLightSchedule, controller));
+app.get('/getSpaLightSchedule', _.bind(controller.getSpaLightSchedule, controller));
 app.get('/status', _.bind(controller.pinStatus, controller));
 app.get('/allStatuses', _.bind(controller.allStatuses, controller));
 app.get('/toggleMasterSwitch', _.bind(controller.toggleMasterSwitch, controller));
@@ -43,6 +53,8 @@ app.get('/toggleIncludeBoosterSwitch', _.bind(controller.toggleIncludeBoosterSwi
 app.get('/masterSwitchStatus', _.bind(controller.masterSwitchStatus, controller));
 app.get('/savePoolLightMode', _.bind(controller.savePoolLightMode, controller));
 app.get('/getPoolLightMode', _.bind(controller.getPoolLightMode, controller));
+app.get('/saveSpaLightMode', _.bind(controller.saveSpaLightMode, controller));
+app.get('/getSpaLightMode', _.bind(controller.getSpaLightMode, controller));
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
