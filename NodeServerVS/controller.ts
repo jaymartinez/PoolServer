@@ -351,7 +351,7 @@ export class Controller {
                 PreviousMode: this.previousSpaLightMode
             }
         };
-        console.log("Saving pool light mode - result is" + this.poolLightMode.toString());
+        console.log("Saving spa light mode - result is" + this.spaLightMode.toString());
         res.send(JSON.stringify(result));
     }
     getSpaLightMode(req: Request, res: Response) {
