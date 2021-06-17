@@ -17,17 +17,32 @@ describe("Controller Tests", () => {
 
     beforeEach(() => {
         let gpio = sinon.createStubInstance(GPIO); 
-        sinon.stub(gpio, "Pool").returns({
+        sinon.stub(gpio, "Pool_1").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "Spa").returns({
+        sinon.stub(gpio, "Pool_2").returns({
             readSync: function () {
                 return;
             }
         });
-        sinon.stub(gpio, "Booster").returns({
+        sinon.stub(gpio, "Spa_1").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "Spa_2").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "Booster_1").returns({
+            readSync: function () {
+                return;
+            }
+        });
+        sinon.stub(gpio, "Booster_2").returns({
             readSync: function () {
                 return;
             }
