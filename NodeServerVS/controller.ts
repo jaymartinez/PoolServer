@@ -394,6 +394,26 @@ export class Controller {
 		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Heater)));
     }
     savePoolLightMode(req: Request, res: Response) {
+        const numCycles = req.query.mode * 2;
+        console.log("Saving pool light mode " + req.query.mode.toString() + " num cycles = " + numCycles.toString());
+
+        try {
+            let i = 0;
+            function loop() {
+                setTimeout(function() {
+                    let toggleResult = this.gpio.toggle(this.gpio.PoolLight);
+                    i++;
+                    if (i < numCycles) {
+                        loop();
+                    }
+                }, 50);
+            }
+        }
+        catch (err) {
+            console.log(err.message);
+            throw err;
+        }
+
         this.previousPoolLightMode = this.poolLightMode;
         this.poolLightMode = req.query.mode;
 
@@ -416,6 +436,26 @@ export class Controller {
         res.send(JSON.stringify(result));
     }
     saveSpaLightMode(req: Request, res: Response) {
+        const numCycles = req.query.mode * 2;
+        console.log("Saving spa light mode " + req.query.mode.toString() + " num cycles = " + numCycles.toString());
+
+        try {
+            let i = 0;
+            function loop() {
+                setTimeout(function() {
+                    let toggleResult = this.gpio.toggle(this.gpio.SpaLight);
+                    i++;
+                    if (i < numCycles) {
+                        loop();
+                    }
+                }, 50);
+            }
+        }
+        catch (err) {
+            console.log(err.message);
+            throw err;
+        }
+
         this.previousSpaLightMode = this.spaLightMode;
         this.spaLightMode = req.query.mode;
 
