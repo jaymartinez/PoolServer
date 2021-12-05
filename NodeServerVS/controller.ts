@@ -129,36 +129,83 @@ export class Controller {
         
         if (this.scheduleEnabled) {
 		    if (this.poolSchedule.startHour === hour && this.poolSchedule.startMinute === minute) {
-			    if (this.gpio.Pool.Gpio.readSync() === 0) {
-                    this.gpio.Pool.Gpio.writeSync(1);
-                    this.gpio.Pool.DateActivated = new Date(Date.now());
-				    console.log("Pool pump active at " + this.gpio.Pool.DateActivated.toLocaleString());
-			    }
+                const pool1State = this.gpio.Pool_1.Gpio.readSync();
+                const pool2State = this.gpio.Pool_2.Gpio.readSync();
+                const now = new Date(Date.now());
+
+                // In case one is already on for whatever reason, no need to write to it again
+                if (pool1State === 0) {
+                    this.gpio.Pool_1.Gpio.writeSync(1);
+                    this.gpio.Pool_1.DateActivated = now;
+                    console.log("Pool Pump Pin #1 active at " + now.toLocaleString());
+                }
+
+                if (pool2State === 0) {
+                    this.gpio.Pool_2.Gpio.writeSync(1);
+                    this.gpio.Pool_2.DateActivated = now;
+                    console.log("Pool Pump Pin #2 active at " + now.toLocaleString());
+                }
+
+                console.log("Pool Timer active at " + now.toLocaleString());
 		    }
 		    else if (this.poolSchedule.endHour === hour && this.poolSchedule.endMinute === minute) {
-			    if (this.gpio.Pool.Gpio.readSync() === 1) {
-                    this.gpio.Booster.Gpio.writeSync(0);
-                    this.gpio.Heater.Gpio.writeSync(0);
-                    this.gpio.Pool.Gpio.writeSync(0);
-                    this.gpio.Pool.DateDeactivated = new Date(Date.now());
-				    console.log("Pool pump deactivated at " + this.gpio.Pool.DateDeactivated.toLocaleString());
-			    }
+                const pool1State = this.gpio.Pool_1.Gpio.readSync();
+                const pool2State = this.gpio.Pool_2.Gpio.readSync();
+                const now = new Date(Date.now());
+
+                // turn off equipment that relies on pool pump being on
+                this.gpio.Booster_1.Gpio.writeSync(0);
+                this.gpio.Booster_2.Gpio.writeSync(0);
+                this.gpio.Heater.Gpio.writeSync(0);
+
+                if (pool1State === 1) {
+                    this.gpio.Pool_1.Gpio.writeSync(0);
+                    this.gpio.Pool_1.DateDeactivated = now;
+                    console.log("Pool Pump Pin #1 deactivated at " + now.toLocaleString());
+                }
+
+                if (pool2State === 1) {
+                    this.gpio.Pool_2.Gpio.writeSync(0);
+                    this.gpio.Pool_2.DateDeactivated = now;
+                    console.log("Pool Pump Pin #2 deactivated at " + now.toLocaleString());
+                }
 		    }
 
             // Only turn booster on if this flag is set, but allow it to turn off regardless for safety
 		    if (this.includeBoosterWithSchedule && this.boosterSchedule.startHour === hour && this.boosterSchedule.startMinute === minute) {
-			    if (this.gpio.Booster.Gpio.readSync() === 0) {
-                    this.gpio.Booster.Gpio.writeSync(1);
-                    this.gpio.Booster.DateActivated = new Date(Date.now());
-				    console.log("Booster pump activated at " + this.gpio.Booster.DateActivated.toLocaleString());
-			    }
+                const booster1State = this.gpio.Booster_1.Gpio.readSync();
+                const booster2State = this.gpio.Booster_2.Gpio.readSync();
+                const now = new Date(Date.now());
+
+                if (booster1State === 0) {
+                    this.gpio.Booster_1.Gpio.writeSync(1);
+                    this.gpio.Booster_1.DateActivated = now;
+                    console.log("Booster Pump Pin #1 active at " + now.toLocaleString());
+                }
+
+                if (booster2State === 0) {
+                    this.gpio.Booster_2.Gpio.writeSync(1);
+                    this.gpio.Booster_2.DateActivated = now;
+                    console.log("Booster Pump Pin #2 active at " + now.toLocaleString());
+                }
 		    }
+
 		    if (this.boosterSchedule.endHour === hour && this.boosterSchedule.endMinute === minute) {
-			    if (this.gpio.Booster.Gpio.readSync() === 1) {
-                    this.gpio.Booster.Gpio.writeSync(0);
-                    this.gpio.Booster.DateDeactivated = new Date(Date.now());
-				    console.log("Booster pump deactivated at " + this.gpio.Booster.DateDeactivated.toLocaleString());
-			    }
+                const booster1State = this.gpio.Booster_1.Gpio.readSync();
+                const booster2State = this.gpio.Booster_2.Gpio.readSync();
+                const now = new Date(Date.now());
+
+                if (booster1State === 1) {
+                    this.gpio.Booster_1.Gpio.writeSync(0);
+                    this.gpio.Booster_1.DateDeactivated = now;
+                    console.log("Booster Pump Pin #1 deactivated at " + now.toLocaleString());
+                }
+
+                if (booster2State === 1) {
+                    this.gpio.Booster_2.Gpio.writeSync(0);
+                    this.gpio.Booster_2.DateDeactivated = now;
+                    console.log("Booster Pump Pin #2 deactivated at " + now.toLocaleString());
+                }
 		    }
         }
 
@@ -299,13 +346,40 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
 	togglePoolPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Pool)));
+        const pool1Toggle = this.gpio.toggle(this.gpio.Pool_1);
+        const pool2Toggle = this.gpio.toggle(this.gpio.Pool_2);
+
+        if (this.gpio.Pool_1.State !== this.gpio.Pool_2.State) {
+            const msg = "Pool pin 1 state does not equal pool pin 2 state";
+            console.log(msg);
+            throw msg;
+        }
+
+		res.send(JSON.stringify(pool1Toggle));
 	}
 	toggleBoosterPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Booster)));
+        const booster1Toggle = this.gpio.toggle(this.gpio.Booster_1);
+        const booster2Toggle = this.gpio.toggle(this.gpio.Booster_2);
+
+        if (this.gpio.Booster_1.State !== this.gpio.Booster_2.State) {
+            const msg = "Booster Pin 1 state does not equal Booster Pin 2 state";
+            console.log(msg);
+            throw msg;
+        }
+
+		res.send(JSON.stringify(booster1Toggle));
     }
     toggleSpaPump(req: Request, res: Response) {
-		res.send(JSON.stringify(this.gpio.toggle(this.gpio.Spa)));
+        const spa1Toggle = this.gpio.toggle(this.gpio.Spa_1);
+        const spa2Toggle = this.gpio.toggle(this.gpio.Spa_2);
+
+        if (this.gpio.Spa_1.State !== this.gpio.Spa_2.State) {
+            const msg = "Spa Pin 1 state does not equal Spa Pin 2 state";
+            console.log(msg);
+            throw msg;
+        }
+
+		res.send(JSON.stringify(spa1Toggle));
     }
     togglePoolLight(req: Request, res: Response) {
 		res.send(JSON.stringify(this.gpio.toggle(this.gpio.PoolLight)));

@@ -20,19 +20,22 @@ export class PiPin {
     get Name(): string {
         switch (this.pinNumber) {
             case 5:
-                return "Pool Pump";
             case 6:
-                return "Spa Pump";
-            case 17:
-                return "Heater";
+                return "Pool Pump";
+            case 12:
             case 13:
                 return "Booster Pump";
+            case 17:
+                return "Heater";
             case 19:
                 return "Pool Light";
             case 20:
                 return "Spa Light";
             case 21:
                 return "Ground Lights";
+            case 23:
+            case 24:
+                return "Spa Pump"
             default:
                 return "Unknown";
         }
