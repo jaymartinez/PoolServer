@@ -46,6 +46,8 @@ app.get('/setGroundLightSchedule', _.bind(controller.setGroundLightSchedule, con
 app.get('/getGroundLightSchedule', _.bind(controller.getGroundLightSchedule, controller));
 app.get('/setSpaLightSchedule', _.bind(controller.setSpaLightSchedule, controller));
 app.get('/getSpaLightSchedule', _.bind(controller.getSpaLightSchedule, controller));
+app.get('/setBoosterSchedule', _.bind(controller.setBoosterSchedule, controller));
+app.get('/getBoosterSchedule', _.bind(controller.getBoosterSchedule, controller));
 app.get('/status', _.bind(controller.pinStatus, controller));
 app.get('/allStatuses', _.bind(controller.allStatuses, controller));
 app.get('/toggleMasterSwitch', _.bind(controller.toggleMasterSwitch, controller));

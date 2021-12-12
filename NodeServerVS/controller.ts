@@ -23,10 +23,10 @@ export class Controller {
     private spaLightSchedule: EquipmentSchedule;
     private boosterSchedule: EquipmentSchedule;
     private scheduleEnabled: boolean;
+    private boosterScheduleEnabled: boolean;
     private poolLightScheduleEnabled: boolean;
     private groundLightScheduleEnabled: boolean;
     private spaLightScheduleEnabled: boolean;
-    private includeBoosterWithSchedule: boolean;
     private poolLightMode: number;
     private previousPoolLightMode: number;
     private spaLightMode: number;
@@ -39,10 +39,10 @@ export class Controller {
 			throw "options is undefined";
 		}
         this.scheduleEnabled = options.enableSchedule;
+        this.boosterScheduleEnabled = false
         this.poolLightScheduleEnabled = options.poolLightScheduleEnabled;
         this.groundLightScheduleEnabled = options.groundLightScheduleEnabled;
         this.spaLightScheduleEnabled = options.spaLightScheduleEnabled;
-        this.includeBoosterWithSchedule = options.includeBoosterWithSchedule;
         this.poolLightMode = options.poolLightMode;
         this.previousPoolLightMode = PoolLightMode.notSet;
         this.spaLightMode = options.spaLightMode;
@@ -93,8 +93,12 @@ export class Controller {
         return this.scheduleEnabled;
     }
 
+    get BoosterScheduleEnabled(): Boolean {
+        return this.boosterScheduleEnabled;
+    }
+
     get IncludeBoosterWithSchedule(): boolean {
-        return this.includeBoosterWithSchedule;
+        return false;
     }
 
     get PoolSchedule(): EquipmentSchedule {
@@ -170,9 +174,11 @@ export class Controller {
                     console.log("Pool Pump Pin #2 deactivated at " + now.toLocaleString());
                 }
 		    }
+        }
 
+        if (this.boosterScheduleEnabled) {
             // Only turn booster on if this flag is set, but allow it to turn off regardless for safety
-		    if (this.includeBoosterWithSchedule && this.boosterSchedule.startHour === hour && this.boosterSchedule.startMinute === minute) {
+		    if (this.boosterSchedule.startHour === hour && this.boosterSchedule.startMinute === minute) {
                 const booster1State = this.gpio.Booster_1.Gpio.readSync();
                 const booster2State = this.gpio.Booster_2.Gpio.readSync();
                 const now = new Date(Date.now());
@@ -278,13 +284,10 @@ export class Controller {
 		res.send(JSON.stringify(result));
 	}
     toggleIncludeBoosterSwitch(req: Request, res: Response) {
-
-        this.includeBoosterWithSchedule = !this.includeBoosterWithSchedule;
-
+        // Not being used
 		let result = {
-			Data: this.includeBoosterWithSchedule ? 1 : 0
+			Data: 0
 		};
-        console.log("Toggling include booster - result is" + this.includeBoosterWithSchedule.toString());
 		res.send(JSON.stringify(result));
     }
     getGroundLightSchedule(req: Request, res: Response) {
@@ -334,8 +337,20 @@ export class Controller {
 				StartMinute: this.poolSchedule.startMinute,
 				EndHour: this.poolSchedule.endHour,
 				EndMinute: this.poolSchedule.endMinute,
-                IsActive: this.scheduleEnabled,
-                IncludeBooster: this.includeBoosterWithSchedule
+                IsActive: this.scheduleEnabled
+			}
+		};
+		res.send(JSON.stringify(result));
+	}
+	getBoosterSchedule(req: Request, res: Response) {
+        console.log("Entered getBoosterSchedule()");
+		var result = {
+			Data: {
+				StartHour: this.boosterSchedule.startHour,
+				StartMinute: this.boosterSchedule.startMinute,
+				EndHour: this.boosterSchedule.endHour,
+				EndMinute: this.boosterSchedule.endMinute,
+                IsActive: this.boosterScheduleEnabled
 			}
 		};
 		res.send(JSON.stringify(result));
@@ -569,9 +584,57 @@ export class Controller {
 
         res.send(JSON.stringify(result));
     }
+
+    setBoosterSchedule(req: Request, res: Response): void {
+        let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, 
+            startDateHour, startDateMinute;
+
+        if (!req.query.startDate || !req.query.endDate) {
+            msg = "Invalid start or end date"; 
+            result = { messages: ["FAIL: " + msg] };
+            res.send(JSON.stringify(result));
+            return;
+        }
+
+        try {
+            console.log(">> isActive = " + req.query.isActive);
+            this.boosterScheduleEnabled = req.query.isActive === "True" || req.query.isActive === "true" ? true : false;
+            startDate = new Date(req.query.startDate);
+            endDate = new Date(req.query.endDate);
+
+            console.log("Start: " + startDate.toLocaleTimeString() + "\n" + "End: " + endDate.toLocaleTimeString());
+
+            startDateHour = startDate.getHours();
+            startDateMinute = startDate.getMinutes();
+            endDateHour = endDate.getHours();
+            endDateMinute = endDate.getMinutes();
+
+            this.boosterSchedule.endHour = endDateHour;
+            this.boosterSchedule.endMinute = endDateMinute;
+            this.boosterSchedule.startHour = startDateHour;
+            this.boosterSchedule.startMinute = startDateMinute;
+
+            result = { 
+                Data: {
+                    StartHour:this.boosterSchedule.startHour,
+                    StartMinute:this.boosterSchedule.startMinute,
+                    EndHour:this.boosterSchedule.endHour,
+                    EndMinute:this.boosterSchedule.endMinute
+                } 
+            };
+
+        } catch (err) {
+            msg = err.message || err.getMessage();
+            result = { Messages: ["FAIL: " + msg] };
+        }
+
+        res.send(JSON.stringify(result));
+    }
+
+
     setSchedule(req: Request, res: Response): void {
         let msg, result, startDate:Date, endDate:Date, endDateHour, endDateMinute, 
-            startDateHour, startDateMinute, boosterEndHour, boosterEndMinute;
+            startDateHour, startDateMinute;
 
         if (!req.query.startDate || !req.query.endDate) {
             msg = "Invalid start or end date"; 
@@ -583,7 +646,6 @@ export class Controller {
         try {
             console.log(">> isActive = " + req.query.isActive);
             this.scheduleEnabled = req.query.isActive === "True" || req.query.isActive === "true" ? true : false;
-            this.includeBoosterWithSchedule = req.query.includeBooster === "True" || req.query.includeBooster === "true" ? true : false;
             startDate = new Date(req.query.startDate);
             endDate = new Date(req.query.endDate);
 
@@ -598,20 +660,6 @@ export class Controller {
             this.poolSchedule.endMinute = endDateMinute;
             this.poolSchedule.startHour = startDateHour;
             this.poolSchedule.startMinute = startDateMinute;
-
-
-            // Make the booster start a minute after the pool pump and set the end hour 3.5 hours after the pool pump starts.
-            // This is because the pool pump goes into low power mode after 4 hours.
-            this.boosterSchedule.startHour = this.poolSchedule.startHour;
-            this.boosterSchedule.startMinute = this.poolSchedule.startMinute + 5;
-
-            boosterEndMinute = (this.poolSchedule.startMinute + 30) % 60;
-            boosterEndHour = (this.poolSchedule.startHour + 3) % 24;
-            console.log("\n\tBooster End Hour: " + boosterEndHour);
-            console.log("\n\tBooster End Minute: " + boosterEndMinute);
-
-            this.boosterSchedule.endHour = boosterEndHour;
-            this.boosterSchedule.endMinute = boosterEndMinute;
 
             result = { 
                 Data: {
